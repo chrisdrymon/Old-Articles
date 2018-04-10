@@ -14,21 +14,22 @@ def proieltbs(treebank):
                 for token in alltokesinsent:
                     if token.get('lemma') == 'ὁ':
                         mlformatlist = []
-                        #Here we need to find which number value in alltokesinsent the article is. Then we can
-                        #move down to the while loop and subtract 7 from that and add the elements of that word
-                        #to the list and go forward from there.
                         form = token.get('form')
-                        lemma = token.get('lemma')
                         morph = token.get('morphology')
-                        mlformatlist.extend([form, lemma, morph])
+                        articlenumber = alltokesinsent.index(token)
+                        mlformatlist.extend([form, morph])
                         i = -7
                         while i < 14:
-                            nextwordid = articleid + i
-                            if
-                            form =
-
-#                        while sentence[i].get('empty-token-sort'):
- #                           i -= 1
+                            nextwordid = articlenumber + i
+                            try:
+                                form = alltokesinsent[nextwordid].get('form')
+                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                morph = alltokesinsent[nextwordid].get('morphology')
+                                mlformatlist.extend([form, lemma, morph])
+                            except IndexError:
+                                mlformatlist.extend([None, None, None])
+                            i += 1
+                        print(mlformatlist)
 
 
 os.chdir('/home/chris/Desktop/CustomTB')
@@ -46,7 +47,7 @@ for file_name in indir:
 
 #df = pd.DataFrame.from_dict(artPos, orient='index')
 
-#outname = 'NewArtDistance.csv'
+#outname = 'MLFormat.csv'
 #outdir = '/home/chris/Desktop'
 #outpath = os.path.join(outdir, outname)
 #df.to_csv(outpath)
