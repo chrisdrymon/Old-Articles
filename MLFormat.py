@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-from collections import Counter
 import os
 import pandas as pd
 
@@ -17,7 +16,19 @@ def proieltbs(treebank, perarticledict, totarticlenumber):
                         morph = token.get('morphology')
                         articlenumber = alltokesinsent.index(token)
                         mlformatlist = [form, morph]
+                        headwordplace = int(token.get('head-id')) - int(token.get('id'))
                         i = -7
+                        while i < 0:
+                            nextwordid = articlenumber + i
+                            try:
+                                form = alltokesinsent[nextwordid].get('form')
+                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                morph = alltokesinsent[nextwordid].get('morphology')
+                                mlformatlist.extend([form, lemma, morph])
+                            except IndexError:
+                                mlformatlist.extend([None, None, None])
+                            i += 1
+                        i += 1
                         while i < 14:
                             nextwordid = articlenumber + i
                             try:
@@ -30,8 +41,14 @@ def proieltbs(treebank, perarticledict, totarticlenumber):
                             i += 1
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
+                        if alltokesinsent[headwordplace].get('empty-token-sort'):
+                            fanswer = None
+                        else:
+                            fanswer = headwordplace
+                        mlformatlist.extend([fanswer])
     returnlist = [perarticledict, totarticlenumber]
     return returnlist
+
 
 os.chdir('/home/chris/Desktop/CustomTB')
 indir = os.listdir('/home/chris/Desktop/CustomTB')
@@ -46,13 +63,31 @@ for file_name in indir:
             returnedList = proieltbs(tb, perArticleDict, totArticleNumber)
             perArticleDict = returnedList[0]
             totArticleNumber = returnedList[1]
-#        if tbroot.tag == 'treebank':
- #           perseustbs(tb, perArticleDict, totArticleNumber)
 
+labelList = ['Article', 'Morph']
+j = -7
+while j < 0:
+    labelNumber = str(j)
+    numForm = labelNumber + 'form'
+    numLemma = labelNumber + 'lemma'
+    numMorph = labelNumber + 'morph'
+    newList = [numForm, numLemma, numMorph]
+    labelList.extend(newList)
+    j += 1
+j += 1
+while j < 14:
+    labelNumber = str(j)
+    numForm = labelNumber + 'form'
+    numLemma = labelNumber + 'lemma'
+    numMorph = labelNumber + 'morph'
+    newList = [numForm, numLemma, numMorph]
+    labelList.extend(newList)
+    j += 1
+
+labelList.extend(['Answer'])
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
+df.columns = labelList
 outname = 'MLFormat.csv'
 outdir = '/home/chris/Desktop'
 outpath = os.path.join(outdir, outname)
 df.to_csv(outpath)
-
-
