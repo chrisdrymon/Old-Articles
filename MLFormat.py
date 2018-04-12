@@ -87,7 +87,14 @@ while j < 14:
 labelList.extend(['Answer'])
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
 df.columns = labelList
-outname = 'MLFormat.csv'
+df = df.sample(frac=1).reset_index(drop=True)
+splitNum = int(df.shape[0]*.8)
+dfTrain = df[:splitNum]
+dfTest = df[splitNum:]
+outTrainName = 'MLTrain.csv'
+outTestName = 'MLTest.csv'
 outdir = '/home/chris/Desktop'
-outpath = os.path.join(outdir, outname)
-df.to_csv(outpath)
+outTrainPath = os.path.join(outdir, outTrainName)
+outTestPath = os.path.join(outdir, outTestName)
+dfTrain.to_csv(outTrainPath)
+dfTest.to_csv(outTestPath)
