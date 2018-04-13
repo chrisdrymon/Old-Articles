@@ -78,6 +78,8 @@ for file_name in indir:
             allMorphs = returnedList[4]
 
 labelList = ['Article', 'Morph']
+addedList = allLemmas + allForms + allMorphs
+ultimateList = list(set(addedList))
 j = -2
 while j < 0:
     labelNumber = str(j)
@@ -122,4 +124,7 @@ with open("/home/chris/Desktop/Formlist.txt", "w") as output:
         output.write("%s\n" % s)
 with open("/home/chris/Desktop/Morphlist.txt", "w") as output:
     for s in allMorphs:
+        output.write("%s\n" % s)
+with open("/home/chris/Desktop/Everythinglist.txt", "w") as output:
+    for s in ultimateList:
         output.write("%s\n" % s)

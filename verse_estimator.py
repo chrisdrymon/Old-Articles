@@ -6,8 +6,8 @@ import verse_data
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', default=100, type=int, help='batch size')
-parser.add_argument('--train_steps', default=1000, type=int,
+parser.add_argument('--batch_size', default=93, type=int, help='batch size')
+parser.add_argument('--train_steps', default=37, type=int,
                     help='number of training steps')
 
 
@@ -20,15 +20,15 @@ def main(argv):
     # Feature columns describe how to use the input.
     my_feature_columns = []
     for key in train_x.keys():
-        my_feature_columns.append(tf.feature_column.numeric_column(key=key))
+        my_feature_columns.append(tf.feature_column.categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt', default_value=0))
 
     # Build 2 hidden layer DNN with 10, 10 units respectively.
     classifier = tf.estimator.DNNClassifier(
         feature_columns=my_feature_columns,
         # Two hidden layers of 10 nodes each.
-        hidden_units=[10, 10],
-        # The model must choose between 3 classes.
-        n_classes=3)
+        hidden_units=[50, 50],
+        # The model must choose between 6 classes.
+        n_classes=6)
 
     # Train the Model.
     classifier.train(
@@ -42,29 +42,6 @@ def main(argv):
                                                 args.batch_size))
 
     print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
-
-    # Generate predictions from the model
-    expected = ['Setosa', 'Versicolor', 'Virginica']
-    predict_x = {
-        'SepalLength': [5.1, 5.9, 6.9],
-        'SepalWidth': [3.3, 3.0, 3.1],
-        'PetalLength': [1.7, 4.2, 5.4],
-        'PetalWidth': [0.5, 1.5, 2.1],
-    }
-
-    predictions = classifier.predict(
-        input_fn=lambda:verse_data.eval_input_fn(predict_x,
-                                                labels=None,
-                                                batch_size=args.batch_size))
-
-    template = '\nPrediction is "{}" ({:.1f}%), expected "{}"'
-
-    for pred_dict, expec in zip(predictions, expected):
-        class_id = pred_dict['class_ids'][0]
-        probability = pred_dict['probabilities'][class_id]
-
-        print(template.format(verse_data.ANSWERS[class_id],
-                              100 * probability, expec))
 
 
 if __name__ == '__main__':
