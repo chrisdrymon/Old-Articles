@@ -4,18 +4,16 @@ import tensorflow as tf
 CSV_COLUMN_NAMES = ['Article', 'Morph', '-2form', '-2lemma', '-2morph',	'-1form', '-1lemma', '-1morph', '1form',
                     '1lemma', '1morph', '2form', '2lemma', '2morph', '3form', '3lemma', '3morph', 'Answer']
 
-ANSWERSS = ['ellipsed', -2, -1, 1, 2, 3]
+ANSWERS = ['ellipsed', -2, -1, 1, 2, 3]
 
 
-def load_data(y_name='Species'):
-    """Returns the iris dataset as (train_x, train_y), (test_x, test_y)."""
+def load_data(y_name='Answers'):
+    """Returns the article dataset as (train_x, train_y), (test_x, test_y)."""
 
-    train_path = '/home/chris/Desktop/iris_training.csv'
-    test_path = '/home/chris/Desktop/iris_test.csv'
+    train_path = '/home/chris/Desktop/verse_training.csv'
+    test_path = '/home/chris/Desktop/verse_test.csv'
 
     train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
-
-    print(train)
 
     train_x, train_y = train, train.pop(y_name)
 

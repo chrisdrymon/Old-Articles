@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber):
+def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -11,6 +11,12 @@ def proieltbs(treebank, perarticledict, totarticlenumber):
             for sentence in division:
                 alltokesinsent = sentence.findall('token')
                 for token in alltokesinsent:
+                    if not token.get('lemma') in alllemmas:
+                        alllemmas.append(token.get('lemma'))
+                    if not token.get('form') in allforms:
+                        allforms.append(token.get('form'))
+                    if not token.get('morphology'):
+                        allmorphs.append(token.get('morphology'))
                     if token.get('lemma') == 'ὁ':
                         form = token.get('form')
                         morph = token.get('morphology')
@@ -47,7 +53,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber):
                         else:
                             fanswer = headwordplace
                         mlformatlist.extend([fanswer])
-    returnlist = [perarticledict, totarticlenumber]
+    returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs]
     return returnlist
 
 
@@ -55,15 +61,21 @@ os.chdir('/home/chris/Desktop/CustomTB')
 indir = os.listdir('/home/chris/Desktop/CustomTB')
 perArticleDict = {}
 totArticleNumber = 1
+allLemmas = []
+allForms = []
+allMorphs = []
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
         tb = ET.parse(file_name)
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber)
+            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allForms, allMorphs)
             perArticleDict = returnedList[0]
             totArticleNumber = returnedList[1]
+            allLemmas = returnedList[2]
+            allForms = returnedList[3]
+            allMorphs = returnedList[4]
 
 labelList = ['Article', 'Morph']
 j = -2
