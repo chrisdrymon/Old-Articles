@@ -15,7 +15,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         alllemmas.append(token.get('lemma'))
                     if not token.get('form') in allforms:
                         allforms.append(token.get('form'))
-                    if not token.get('morphology'):
+                    if not token.get('morphology') in allmorphs:
                         allmorphs.append(token.get('morphology'))
                     if token.get('lemma') == 'ὁ':
                         form = token.get('form')
@@ -108,8 +108,18 @@ dfTest = df[splitNum:]
 
 outTrainName = 'SmallMLTrain.csv'
 outTestName = 'SmallMLTest.csv'
+
 outdir = '/home/chris/Desktop'
 outTrainPath = os.path.join(outdir, outTrainName)
 outTestPath = os.path.join(outdir, outTestName)
 dfTrain.to_csv(outTrainPath, index=False)
 dfTest.to_csv(outTestPath, index=False)
+with open("/home/chris/Desktop/Lemmalist.txt", "w") as output:
+    for s in allLemmas:
+        output.write("%s\n" % s)
+with open("/home/chris/Desktop/Formlist.txt", "w") as output:
+    for s in allForms:
+        output.write("%s\n" % s)
+with open("/home/chris/Desktop/Morphlist.txt", "w") as output:
+    for s in allMorphs:
+        output.write("%s\n" % s)
