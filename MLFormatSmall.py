@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs):
+def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -48,10 +48,10 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
                         if alltokesinsent[headwordplace].get('empty-token-sort') or headwordplace < -2\
-                                or headwordplace > 4:
+                                or headwordplace > 3:
                             fanswer = 0
                         else:
-                            fanswer = headwordplace
+                            fanswer = answersdict[headwordplace]
                         mlformatlist.extend([fanswer])
     returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs]
     return returnlist
@@ -77,7 +77,7 @@ for file_name in indir:
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allForms, allMorphs)
+            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allForms, allMorphs, answersDict)
             perArticleDict = returnedList[0]
             totArticleNumber = returnedList[1]
             allLemmas = returnedList[2]

@@ -23,8 +23,6 @@ def main(argv):
         temp_column = tf.feature_column.categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt', default_value=0)
         my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
-#    train_y = tf.string_to_number(train_y)
-
     # Build 2 hidden layer DNN with 10, 10 units respectively.
     classifier = tf.estimator.DNNClassifier(
         feature_columns=my_feature_columns,
