@@ -42,7 +42,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber):
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
                         if alltokesinsent[headwordplace].get('empty-token-sort') or headwordplace < -2\
-                                or headwordplace > 3:
+                                or headwordplace > 4:
                             fanswer = 'ellipsed'
                         else:
                             fanswer = headwordplace

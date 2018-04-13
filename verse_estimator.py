@@ -2,7 +2,7 @@
 import argparse
 import tensorflow as tf
 
-import iris_data
+import verse_data
 
 
 parser = argparse.ArgumentParser()
@@ -14,7 +14,7 @@ def main(argv):
     args = parser.parse_args(argv[1:])
 
     # Fetch the data
-    (train_x, train_y), (test_x, test_y) = iris_data.load_data()
+    (train_x, train_y), (test_x, test_y) = verse_data.load_data()
 
     # Feature columns describe how to use the input.
     my_feature_columns = []
