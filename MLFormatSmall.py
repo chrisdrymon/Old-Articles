@@ -49,7 +49,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         totarticlenumber += 1
                         if alltokesinsent[headwordplace].get('empty-token-sort') or headwordplace < -2\
                                 or headwordplace > 4:
-                            fanswer = 'ellipsed'
+                            fanswer = 0
                         else:
                             fanswer = headwordplace
                         mlformatlist.extend([fanswer])
@@ -64,6 +64,13 @@ totArticleNumber = 1
 allLemmas = []
 allForms = []
 allMorphs = []
+answersDict = {}
+answersDict[-2] = 0
+answersDict[-1] = 1
+answersDict[0] = 5
+answersDict[1] = 2
+answersDict[2] = 3
+answersDict[3] = 4
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
         tb = ET.parse(file_name)

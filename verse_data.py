@@ -4,7 +4,7 @@ import tensorflow as tf
 CSV_COLUMN_NAMES = ['Article', 'Morph', '-2form', '-2lemma', '-2morph',	'-1form', '-1lemma', '-1morph', '1form',
                     '1lemma', '1morph', '2form', '2lemma', '2morph', '3form', '3lemma', '3morph', 'Answer']
 
-ANSWERS = ['ellipsed', -2, -1, 1, 2, 3]
+ANSWERS = [-2, -1, 1, 2, 3, 'Ellipsed']
 
 
 def load_data(y_name='Answer'):
@@ -29,7 +29,7 @@ def train_input_fn(features, labels, batch_size):
     dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(3441).repeat().batch(batch_size)
+    dataset = dataset.shuffle(5000).repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
