@@ -57,20 +57,20 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-os.chdir('/home/chris/Desktop/NTTB')
-indir = os.listdir('/home/chris/Desktop/NTTB')
+os.chdir('/home/chris/Desktop/CustomTB')
+indir = os.listdir('/home/chris/Desktop/CustomTB')
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = []
 allForms = []
 allMorphs = []
-answersDict = {}
-answersDict[-2] = 0
-answersDict[-1] = 1
-answersDict[0] = 5
-answersDict[1] = 2
-answersDict[2] = 3
-answersDict[3] = 4
+answersDict = {-2: 0,
+               -1: 1,
+               0: 5,
+               1: 2,
+               2: 3,
+               3: 4}
+
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
         tb = ET.parse(file_name)

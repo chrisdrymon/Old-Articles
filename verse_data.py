@@ -1,9 +1,6 @@
 import pandas as pd
 import tensorflow as tf
 
-CSV_COLUMN_NAMES = ['Article', 'Morph', '-2form', '-2lemma', '-2morph',	'-1form', '-1lemma', '-1morph', '1form',
-                    '1lemma', '1morph', '2form', '2lemma', '2morph', '3form', '3lemma', '3morph', 'Answer']
-
 ANSWERS = [-2, -1, 1, 2, 3, 'Ellipsed']
 
 
@@ -13,11 +10,11 @@ def load_data(y_name='Answer'):
     train_path = '/home/chris/Desktop/SmallMLTrain.csv'
     test_path = '/home/chris/Desktop/SmallMLTest.csv'
 
-    train = pd.read_csv(train_path, names=CSV_COLUMN_NAMES, header=0)
+    train = pd.read_csv(train_path)
 
     train_x, train_y = train, train.pop(y_name)
 
-    test = pd.read_csv(test_path, names=CSV_COLUMN_NAMES, header=0)
+    test = pd.read_csv(test_path)
     test_x, test_y = test, test.pop(y_name)
 
     return (train_x, train_y), (test_x, test_y)
