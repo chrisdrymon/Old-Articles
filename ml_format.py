@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import os
 import pandas as pd
+from utility import deaccent
 
 
 def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
@@ -12,7 +13,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                 alltokesinsent = sentence.findall('token')
                 for token in alltokesinsent:
                     if not token.get('lemma') in alllemmas:
-                        alllemmas.append(token.get('lemma'))
+                        alllemmas.append(deaccent(token.get('lemma')))
                     if not token.get('form') in allforms:
                         allforms.append(token.get('form'))
                     if not token.get('morphology') in allmorphs:
