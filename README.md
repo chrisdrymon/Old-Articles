@@ -1,6 +1,4 @@
 # Tensorflow
-My tensorflow projects
+ml_format formats my treebanks for usage in Tensorflow.
 
-MLFormat formats my treebanks for usage in Tensorflow.
-
-Verse_estimator.py runs the neural network. It depends on verse_data.py.
+article_estimator.py runs the neural network. It depends on article_data.py.
