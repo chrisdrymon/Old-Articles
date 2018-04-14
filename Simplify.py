@@ -1,132 +1,81 @@
+"""An Example of a DNNClassifier for the Article dataset."""
 import tensorflow as tf
-import xml.etree.ElementTree as ET
-import os
 import pandas as pd
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, totwordlist):
-    """Creates lists in ML format for each article."""
-    froot = treebank.getroot()
-    for source in froot:
-        for division in source:
-            for sentence in division:
-                alltokesinsent = sentence.findall('token')
-                for token in alltokesinsent:
-                    if not token.get('form') in totwordlist:
-                        totwordlist.append(token.get('form'))
-                    if not token.get('lemma') in totwordlist:
-                        totwordlist.append(token.get('lemma'))
-                    if not token.get('morphology') in totwordlist:
-                        totwordlist.append(token.get('morphology'))
-                    if token.get('lemma') == 'ὁ':
-                        form = token.get('form')
-                        morph = token.get('morphology')
-                        articlenumber = alltokesinsent.index(token)
-                        mlformatlist = [form, morph]
-                        headwordplace = int(token.get('head-id')) - int(token.get('id'))
-                        i = -7
-                        while i < 0:
-                            nextwordid = articlenumber + i
-                            try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
-                                morph = alltokesinsent[nextwordid].get('morphology')
-                                mlformatlist.extend([form, lemma, morph])
-                            except IndexError:
-                                mlformatlist.extend([None, None, None])
-                            i += 1
-                        i += 1
-                        while i < 14:
-                            nextwordid = articlenumber + i
-                            try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
-                                morph = alltokesinsent[nextwordid].get('morphology')
-                                mlformatlist.extend([form, lemma, morph])
-                            except IndexError:
-                                mlformatlist.extend([None, None, None])
-                            i += 1
-                        if alltokesinsent[headwordplace].get('empty-token-sort'):
-                            fanswer = None
-                        else:
-                            fanswer = str(headwordplace)
-                        mlformatlist.extend([fanswer])
-                        perarticledict[totarticlenumber] = mlformatlist
-                        totarticlenumber += 1
-    returnlist = [perarticledict, totarticlenumber, totwordlist]
-    return returnlist
+def load_data(y_name='Answer'):
+    """Returns the article dataset as (train_x, train_y), (test_x, test_y)."""
+
+    train_path = '/home/chris/Desktop/SmallMLTrain.csv'
+    test_path = '/home/chris/Desktop/SmallMLTest.csv'
+
+    train = pd.read_csv(train_path)
+
+    train_x, train_y = train, train.pop(y_name)
+
+    test = pd.read_csv(test_path)
+    test_x, test_y = test, test.pop(y_name)
+
+    return (train_x, train_y), (test_x, test_y)
 
 
-def fetchdata():
-    os.chdir('/home/chris/Desktop/CustomTB')
-    indir = os.listdir('/home/chris/Desktop/CustomTB')
-    per_article_dict = {}
-    tot_article_number = 1
-    totwordlist = ['ellipsed']
-    for file_name in indir:
-        if not file_name == 'README.md' and not file_name == '.git':
-            tb = ET.parse(file_name)
-            tbroot = tb.getroot()
-            print(file_name)
-            if tbroot.tag == 'proiel':
-                returnedList = proieltbs(tb, per_article_dict, tot_article_number, totwordlist)
-                per_article_dict = returnedList[0]
-                tot_article_number = returnedList[1]
-                totwordlist = returnedList[2]
+def train_input_fn(features, labels, batch_size):
+    """An input function for training"""
+    # Convert the inputs to a Dataset.
+    dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
-    labellist = ['Article', 'Morph']
-    j = -7
-    while j < 0:
-        label_number = str(j)
-        num_form = label_number + 'form'
-        num_lemma = label_number + 'lemma'
-        num_morph = label_number + 'morph'
-        new_list = [num_form, num_lemma, num_morph]
-        labellist.extend(new_list)
-        j += 1
-    j += 1
-    while j < 14:
-        label_number = str(j)
-        num_form = label_number + 'form'
-        num_lemma = label_number + 'lemma'
-        num_morph = label_number + 'morph'
-        new_list = [num_form, num_lemma, num_morph]
-        labellist.extend(new_list)
-        j += 1
+    # Shuffle, repeat, and batch the examples.
+    dataset = dataset.shuffle(5000).repeat().batch(batch_size)
 
-    labellist.extend(['Answer'])
-    df = pd.DataFrame.from_dict(per_article_dict, orient='index')
-    df = df.fillna('ellipsed')
-    df.columns = labellist
-    df = df.sample(frac=1).reset_index(drop=True)
-
-    split_num = int(df.shape[0]*.8)
-    df_train = df[:split_num]
-    df_test = df[split_num:]
-
-    out_train_name = 'MLTrain.csv'
-    out_test_name = 'MLTest.csv'
-    outdir = '/home/chris/Desktop'
-    out_train_path = os.path.join(outdir, out_train_name)
-    out_test_path = os.path.join(outdir, out_test_name)
-    df_train.to_csv(out_train_path)
-    df_test.to_csv(out_test_path)
-
-    dftrain_x = tf.constant(df_train)
-    dftrain_y = tf.constant(df_train.pop('Answer'))
-
-    dftest_x = tf.constant(df_test)
-    dftest_y = tf.constant(df_test.pop('Answer'))
-
-    totwordlist = [i for i in totwordlist if i !=None]
-
-    tuple(totwordlist)
-
-    return (dftrain_x, dftrain_y), (dftest_x, dftest_y), totwordlist, labellist
+    # Return the dataset.
+    return dataset
 
 
-(trainX, trainY), (testX, testY), totWordList, labelList = fetchdata()
+def eval_input_fn(features, labels, batch_size):
+    """An input function for evaluation or prediction"""
+    features=dict(features)
+    if labels is None:
+        # No labels, use only features.
+        inputs = features
+    else:
+        inputs = (features, labels)
 
-trainXslice = tf.data.Dataset.from_tensor_slices(trainX)
+    # Convert the inputs to a Dataset.
+    dataset = tf.data.Dataset.from_tensor_slices(inputs)
 
-print(trainXslice.output_shapes)
+    # Batch the examples
+    assert batch_size is not None, "batch_size must not be None"
+    dataset = dataset.batch(batch_size)
+
+    # Return the dataset.
+    return dataset
+
+
+tf.logging.set_verbosity(tf.logging.INFO)
+batchSize = 100
+trainSteps = 300
+
+# Fetch the data
+(train_X, train_Y), (test_X, test_Y) = load_data()
+
+# Categorical Columns wrapped in Indicator Columns
+my_feature_columns = []
+for key in train_X.keys():
+    temp_column = tf.feature_column.\
+        categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt',
+                                                default_value=0)
+    my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
+
+classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
+                                        hidden_units=[200, 50, 50], n_classes=6, model_dir='/home/chris/Desktop/logger')
+
+# Train the Model.
+classifier.train(
+    input_fn=lambda:train_input_fn(train_X, train_Y, batchSize),
+    steps=trainSteps)
+
+# Evaluate the model.
+eval_result = classifier.evaluate(
+    input_fn=lambda:eval_input_fn(test_X, test_Y, batchSize))
+
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
