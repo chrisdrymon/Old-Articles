@@ -6,8 +6,8 @@ import verse_data
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch_size', default=93, type=int, help='batch size')
-parser.add_argument('--train_steps', default=37, type=int,
+parser.add_argument('--batch_size', default=100, type=int, help='batch size')
+parser.add_argument('--train_steps', default=200, type=int,
                     help='number of training steps')
 
 
@@ -17,30 +17,23 @@ def main(argv):
     # Fetch the data
     (train_x, train_y), (test_x, test_y) = verse_data.load_data()
 
-    # Feature columns describe how to use the input.
+    # Categorical Columns wrapped in Indicator Columns
     my_feature_columns = []
     for key in train_x.keys():
         temp_column = tf.feature_column.categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt', default_value=0)
         my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
-    # Build 2 hidden layer DNN with 10, 10 units respectively.
-    classifier = tf.estimator.DNNClassifier(
-        feature_columns=my_feature_columns,
-        # Two hidden layers of 10 nodes each.
-        hidden_units=[50, 50],
-        # The model must choose between 6 classes.
-        n_classes=6)
+    classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
+                                            hidden_units=[200, 50, 50], n_classes=6, model_dir='/home/chris/Desktop/logger')
 
     # Train the Model.
     classifier.train(
-        input_fn=lambda:verse_data.train_input_fn(train_x, train_y,
-                                                 args.batch_size),
+        input_fn=lambda:verse_data.train_input_fn(train_x, train_y, args.batch_size),
         steps=args.train_steps)
 
     # Evaluate the model.
     eval_result = classifier.evaluate(
-        input_fn=lambda:verse_data.eval_input_fn(test_x, test_y,
-                                                args.batch_size))
+        input_fn=lambda:verse_data.eval_input_fn(test_x, test_y, args.batch_size))
 
     print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 

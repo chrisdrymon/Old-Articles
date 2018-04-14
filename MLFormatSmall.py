@@ -57,8 +57,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-os.chdir('/home/chris/Desktop/CustomTB')
-indir = os.listdir('/home/chris/Desktop/CustomTB')
+os.chdir('/home/chris/Desktop/NTTB')
+indir = os.listdir('/home/chris/Desktop/NTTB')
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = []
