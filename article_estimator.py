@@ -2,7 +2,7 @@
 import argparse
 import tensorflow as tf
 
-import verse_data
+import article_data
 
 
 parser = argparse.ArgumentParser()
@@ -15,7 +15,7 @@ def main(argv):
     args = parser.parse_args(argv[1:])
 
     # Fetch the data
-    (train_x, train_y), (test_x, test_y) = verse_data.load_data()
+    (train_x, train_y), (test_x, test_y) = article_data.load_data()
 
     # Categorical Columns wrapped in Indicator Columns
     my_feature_columns = []
@@ -28,12 +28,12 @@ def main(argv):
 
     # Train the Model.
     classifier.train(
-        input_fn=lambda:verse_data.train_input_fn(train_x, train_y, args.batch_size),
+        input_fn=lambda:article_data.train_input_fn(train_x, train_y, args.batch_size),
         steps=args.train_steps)
 
     # Evaluate the model.
     eval_result = classifier.evaluate(
-        input_fn=lambda:verse_data.eval_input_fn(test_x, test_y, args.batch_size))
+        input_fn=lambda:article_data.eval_input_fn(test_x, test_y, args.batch_size))
 
     print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
