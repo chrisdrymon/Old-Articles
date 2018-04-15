@@ -10,16 +10,17 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     for source in froot:
         for division in source:
             for sentence in division:
-                alltokesinsent = sentence.findall('token')
+                alltokesinsent = sentence.findall(".[@form]")
                 for token in alltokesinsent:
-                    if not token.get('lemma') in alllemmas:
+                    print(token.get('lemma'))
+                    if not deaccent(token.get('lemma')) in alllemmas:
                         alllemmas.append(deaccent(token.get('lemma')))
-                    if not token.get('form') in allforms:
-                        allforms.append(token.get('form'))
+                    if not deaccent(token.get('form')) in allforms:
+                        allforms.append(deaccent(token.get('form')))
                     if not token.get('morphology') in allmorphs:
                         allmorphs.append(token.get('morphology'))
                     if token.get('lemma') == 'ὁ':
-                        form = token.get('form')
+                        form = deaccent(token.get('form'))
                         morph = token.get('morphology')
                         articlenumber = alltokesinsent.index(token)
                         mlformatlist = [form, morph]
@@ -28,8 +29,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         while i < 0:
                             nextwordid = articlenumber + i
                             try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                form = deaccent(alltokesinsent[nextwordid].get('form'))
+                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                                 morph = alltokesinsent[nextwordid].get('morphology')
                                 mlformatlist.extend([form, lemma, morph])
                             except IndexError:
@@ -39,8 +40,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         while i < 4:
                             nextwordid = articlenumber + i
                             try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                form = deaccent(alltokesinsent[nextwordid].get('form'))
+                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                                 morph = alltokesinsent[nextwordid].get('morphology')
                                 mlformatlist.extend([form, lemma, morph])
                             except IndexError:
