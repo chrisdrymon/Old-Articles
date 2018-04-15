@@ -6,8 +6,8 @@ import pandas as pd
 def load_data(y_name='Answer'):
     """Returns the article dataset as (train_x, train_y), (test_x, test_y)."""
 
-    train_path = '/home/chris/Desktop/SmallMLTrain.csv'
-    test_path = '/home/chris/Desktop/SmallMLTest.csv'
+    train_path = '/home/chris/Desktop/MLTrain.csv'
+    test_path = '/home/chris/Desktop/MLTest.csv'
 
     train = pd.read_csv(train_path)
 
@@ -53,7 +53,7 @@ def eval_input_fn(features, labels, batch_size):
 
 tf.logging.set_verbosity(tf.logging.INFO)
 batchSize = 100
-trainSteps = 450
+trainSteps = 10
 
 # Fetch the data
 (train_X, train_Y), (test_X, test_Y) = load_data()
@@ -68,7 +68,7 @@ for key in train_X.keys():
 
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
                                         hidden_units=[500, 500], n_classes=6,
-                                        model_dir='/home/chris/Desktop/logger500500')
+                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
 
 # Train the Model.
 classifier.train(

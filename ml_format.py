@@ -115,8 +115,8 @@ splitNum = int(df.shape[0]*.8)
 dfTrain = df[:splitNum]
 dfTest = df[splitNum:]
 
-outTrainName = 'SmallMLTrain.csv'
-outTestName = 'SmallMLTest.csv'
+outTrainName = 'MLTrain.csv'
+outTestName = 'MLTest.csv'
 
 outdir = '/home/chris/Desktop'
 outTrainPath = os.path.join(outdir, outTrainName)
