@@ -10,9 +10,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     for source in froot:
         for division in source:
             for sentence in division:
-                alltokesinsent = sentence.findall(".[@form]")
+                alltokesinsent = sentence.findall(".*[@form]")
                 for token in alltokesinsent:
-                    print(token.get('lemma'))
                     if not deaccent(token.get('lemma')) in alllemmas:
                         alllemmas.append(deaccent(token.get('lemma')))
                     if not deaccent(token.get('form')) in allforms:
@@ -49,8 +48,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             i += 1
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
-                        if alltokesinsent[headwordplace].get('empty-token-sort') or headwordplace < -2\
-                                or headwordplace > 3:
+                        if headwordplace < -2 or headwordplace > 3:
                             fanswer = 0
                         else:
                             fanswer = answersdict[headwordplace]
@@ -137,3 +135,8 @@ with open("/home/chris/Desktop/Morphlist.txt", "w") as output:
 with open("/home/chris/Desktop/Everythinglist.txt", "w") as output:
     for s in ultimateList:
         output.write("%s\n" % s)
+print(len(allLemmas), 'lemmas in lemma list.')
+print(len(allForms), 'forms in form list.')
+print(len(allMorphs), 'morphologies in morph list.')
+print(len(ultimateList), 'entries total in the ultimate list.')
+print(len(perArticleDict), 'article entires.')

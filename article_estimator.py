@@ -25,7 +25,7 @@ def train_input_fn(features, labels, batch_size):
     dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(5000).repeat().batch(batch_size)
+    dataset = dataset.shuffle(12000).repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
@@ -33,7 +33,7 @@ def train_input_fn(features, labels, batch_size):
 
 def eval_input_fn(features, labels, batch_size):
     """An input function for evaluation or prediction"""
-    features=dict(features)
+    features = dict(features)
     if labels is None:
         # No labels, use only features.
         inputs = features
@@ -53,7 +53,7 @@ def eval_input_fn(features, labels, batch_size):
 
 tf.logging.set_verbosity(tf.logging.INFO)
 batchSize = 100
-trainSteps = 300
+trainSteps = 450
 
 # Fetch the data
 (train_X, train_Y), (test_X, test_Y) = load_data()
@@ -67,7 +67,8 @@ for key in train_X.keys():
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
-                                        hidden_units=[200, 50, 50], n_classes=6, model_dir='/home/chris/Desktop/logger')
+                                        hidden_units=[500, 500], n_classes=6,
+                                        model_dir='/home/chris/Desktop/logger500500')
 
 # Train the Model.
 classifier.train(
