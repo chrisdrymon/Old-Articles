@@ -67,8 +67,8 @@ for key in train_X.keys():
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
-                                        hidden_units=[500, 500], n_classes=6,
-                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
+                                        hidden_units=[500, 500], n_classes=6,)
+#                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
 
 # Train the Model.
 classifier.train(
