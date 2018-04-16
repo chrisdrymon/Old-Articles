@@ -1,8 +1,7 @@
 import xml.etree.ElementTree as ET
 import os
 import pandas as pd
-import sys
-from pathlib import Path
+from utility import deaccent
 
 
 def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
@@ -11,16 +10,16 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     for source in froot:
         for division in source:
             for sentence in division:
-                alltokesinsent = sentence.findall('token')
+                alltokesinsent = sentence.findall(".*[@form]")
                 for token in alltokesinsent:
-                    if not token.get('lemma') in alllemmas:
-                        alllemmas.append(token.get('lemma'))
-                    if not token.get('form') in allforms:
-                        allforms.append(token.get('form'))
+                    if not deaccent(token.get('lemma')) in alllemmas:
+                        alllemmas.append(deaccent(token.get('lemma')))
+                    if not deaccent(token.get('form')) in allforms:
+                        allforms.append(deaccent(token.get('form')))
                     if not token.get('morphology') in allmorphs:
                         allmorphs.append(token.get('morphology'))
                     if token.get('lemma') == 'ὁ':
-                        form = token.get('form')
+                        form = deaccent(token.get('form'))
                         morph = token.get('morphology')
                         articlenumber = alltokesinsent.index(token)
                         mlformatlist = [form, morph]
@@ -29,8 +28,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         while i < 0:
                             nextwordid = articlenumber + i
                             try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                form = deaccent(alltokesinsent[nextwordid].get('form'))
+                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                                 morph = alltokesinsent[nextwordid].get('morphology')
                                 mlformatlist.extend([form, lemma, morph])
                             except IndexError:
@@ -40,8 +39,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         while i < 4:
                             nextwordid = articlenumber + i
                             try:
-                                form = alltokesinsent[nextwordid].get('form')
-                                lemma = alltokesinsent[nextwordid].get('lemma')
+                                form = deaccent(alltokesinsent[nextwordid].get('form'))
+                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                                 morph = alltokesinsent[nextwordid].get('morphology')
                                 mlformatlist.extend([form, lemma, morph])
                             except IndexError:
@@ -49,8 +48,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             i += 1
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
-                        if alltokesinsent[headwordplace].get('empty-token-sort') or headwordplace < -2\
-                                or headwordplace > 3:
+                        if headwordplace < -2 or headwordplace > 3:
                             fanswer = 0
                         else:
                             fanswer = answersdict[headwordplace]
@@ -59,13 +57,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-if sys.platform == 'Windows':
-    treebankFolder = Path('/Users/chris/Desktop/CustomTB/')
-if sys.platform == 'Linux':
-    treebankFolder = Path('/home/chris/Desktop/CustomTB/')
-
-os.chdir(treebankFolder)
-indir = os.listdir(treebankFolder)
+os.chdir('/home/chris/Desktop/CustomTB')
+indir = os.listdir('/home/chris/Desktop/CustomTB')
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = []
@@ -122,8 +115,8 @@ splitNum = int(df.shape[0]*.8)
 dfTrain = df[:splitNum]
 dfTest = df[splitNum:]
 
-outTrainName = 'SmallMLTrain.csv'
-outTestName = 'SmallMLTest.csv'
+outTrainName = 'MLTrain.csv'
+outTestName = 'MLTest.csv'
 
 outdir = '/home/chris/Desktop'
 outTrainPath = os.path.join(outdir, outTrainName)
@@ -142,3 +135,8 @@ with open("/home/chris/Desktop/Morphlist.txt", "w") as output:
 with open("/home/chris/Desktop/Everythinglist.txt", "w") as output:
     for s in ultimateList:
         output.write("%s\n" % s)
+print(len(allLemmas), 'lemmas in lemma list.')
+print(len(allForms), 'forms in form list.')
+print(len(allMorphs), 'morphologies in morph list.')
+print(len(ultimateList), 'entries total in the ultimate list.')
+print(len(perArticleDict), 'article entires.')
