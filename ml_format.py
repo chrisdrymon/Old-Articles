@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 import os
 import pandas as pd
+import sys
+from pathlib import Path
 
 
 def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
@@ -57,8 +59,13 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-os.chdir('/home/chris/Desktop/CustomTB')
-indir = os.listdir('/home/chris/Desktop/CustomTB')
+if sys.platform == 'Windows':
+    treebankFolder = Path('/Users/chris/Desktop/CustomTB/')
+if sys.platform == 'Linux':
+    treebankFolder = Path('/home/chris/Desktop/CustomTB/')
+
+os.chdir(treebankFolder)
+indir = os.listdir(treebankFolder)
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = []
