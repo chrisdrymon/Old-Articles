@@ -23,7 +23,11 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         form = deaccent(token.get('form'))
                         morph = token.get('morphology')
                         articlenumber = alltokesinsent.index(token)
-                        mlformatlist = [form, morph]
+                        if source.get('jewish') == 'yes':
+                            jewish = 'yes'
+                        else:
+                            jewish = 'no'
+                        mlformatlist = [form, morph, jewish]
                         headwordplace = int(token.get('head-id')) - int(token.get('id'))
                         i = -2
                         while i < 0:
@@ -59,6 +63,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
 
 
 treebankFolder = '/home/chris/Desktop/CustomTB/'
+
 outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
 outTestPath = Path('/home/chris/Desktop/MLTest.csv')
 lemmaListPath = Path('/home/chris/Desktop/Lemmalist.txt')
@@ -71,7 +76,7 @@ indir = os.listdir(treebankFolder)
 
 perArticleDict = {}
 totArticleNumber = 1
-allLemmas = []
+allLemmas = ['yes', 'no']
 allForms = []
 allMorphs = []
 answersDict = {-2: 0,
@@ -94,7 +99,7 @@ for file_name in indir:
             allForms = returnedList[3]
             allMorphs = returnedList[4]
 
-labelList = ['Article', 'Morph']
+labelList = ['Article', 'Morph', 'Jewish']
 addedList = allLemmas + allForms + allMorphs
 ultimateList = list(set(addedList))
 j = -2
