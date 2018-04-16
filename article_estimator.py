@@ -72,11 +72,11 @@ classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
 
 # Train the Model.
 classifier.train(
-    input_fn=lambda:train_input_fn(train_X, train_Y, batchSize),
+    input_fn=lambda: train_input_fn(train_X, train_Y, batchSize),
     steps=trainSteps)
 
 # Evaluate the model.
 eval_result = classifier.evaluate(
-    input_fn=lambda:eval_input_fn(test_X, test_Y, batchSize))
+    input_fn=lambda: eval_input_fn(test_X, test_Y, batchSize))
 
 print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
