@@ -2,6 +2,8 @@ import xml.etree.ElementTree as ET
 import os
 import pandas as pd
 from utility import deaccent
+from pathlib import Path
+import sys
 
 
 def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
@@ -57,8 +59,27 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-os.chdir('/home/chris/Desktop/CustomTB')
-indir = os.listdir('/home/chris/Desktop/CustomTB')
+if sys.platform == 'win32':
+    treebankFolder = 'C:\\Users\\chris\\Desktop\\CustomTB\\'
+    outTrainPath = Path('/Users/chris/Desktop/MLTrain.csv')
+    outTestPath = Path('/Users/chris/Desktop/MLTest.csv')
+    lemmaListPath = Path('/Users/chris/Desktop/Lemmalist.txt')
+    formListPath = Path('/Users/chris/Desktop/Formlist.txt')
+    morphListPath = Path('/Users/chris/Desktop/Morphlist.txt')
+    ultimateListPath = Path('/Users/chris/Desktop/Everythinglist.txt')
+
+else:
+    treebankFolder = '/home/chris/Desktop/CustomTB/'
+    outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
+    outTestPath = Path('/home/chris/Desktop/MLTest.csv')
+    lemmaListPath = Path('/home/chris/Desktop/Lemmalist.txt')
+    formListPath = Path('/home/chris/Desktop/Formlist.txt')
+    morphListPath = Path('/home/chris/Desktop/Morphlist.txt')
+    ultimateListPath = Path('/home/chris/Desktop/Everythinglist.txt')
+
+os.chdir(treebankFolder)
+indir = os.listdir(treebankFolder)
+
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = []
@@ -114,25 +135,18 @@ df = df.sample(frac=1).reset_index(drop=True)
 splitNum = int(df.shape[0]*.8)
 dfTrain = df[:splitNum]
 dfTest = df[splitNum:]
-
-outTrainName = 'MLTrain.csv'
-outTestName = 'MLTest.csv'
-
-outdir = '/home/chris/Desktop'
-outTrainPath = os.path.join(outdir, outTrainName)
-outTestPath = os.path.join(outdir, outTestName)
 dfTrain.to_csv(outTrainPath, index=False)
 dfTest.to_csv(outTestPath, index=False)
-with open("/home/chris/Desktop/Lemmalist.txt", "w") as output:
+with open(lemmaListPath, "w") as output:
     for s in allLemmas:
         output.write("%s\n" % s)
-with open("/home/chris/Desktop/Formlist.txt", "w") as output:
+with open(formListPath, "w") as output:
     for s in allForms:
         output.write("%s\n" % s)
-with open("/home/chris/Desktop/Morphlist.txt", "w") as output:
+with open(morphListPath, "w") as output:
     for s in allMorphs:
         output.write("%s\n" % s)
-with open("/home/chris/Desktop/Everythinglist.txt", "w") as output:
+with open(ultimateListPath, "w") as output:
     for s in ultimateList:
         output.write("%s\n" % s)
 print(len(allLemmas), 'lemmas in lemma list.')
