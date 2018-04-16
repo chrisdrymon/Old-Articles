@@ -3,7 +3,6 @@ import os
 import pandas as pd
 from utility import deaccent
 from pathlib import Path
-import sys
 
 
 def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, answersdict):
@@ -59,23 +58,13 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
     return returnlist
 
 
-if sys.platform == 'win32':
-    treebankFolder = 'C:\\Users\\chris\\Desktop\\CustomTB\\'
-    outTrainPath = Path('/Users/chris/Desktop/MLTrain.csv')
-    outTestPath = Path('/Users/chris/Desktop/MLTest.csv')
-    lemmaListPath = Path('/Users/chris/Desktop/Lemmalist.txt')
-    formListPath = Path('/Users/chris/Desktop/Formlist.txt')
-    morphListPath = Path('/Users/chris/Desktop/Morphlist.txt')
-    ultimateListPath = Path('/Users/chris/Desktop/Everythinglist.txt')
-
-else:
-    treebankFolder = '/home/chris/Desktop/CustomTB/'
-    outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
-    outTestPath = Path('/home/chris/Desktop/MLTest.csv')
-    lemmaListPath = Path('/home/chris/Desktop/Lemmalist.txt')
-    formListPath = Path('/home/chris/Desktop/Formlist.txt')
-    morphListPath = Path('/home/chris/Desktop/Morphlist.txt')
-    ultimateListPath = Path('/home/chris/Desktop/Everythinglist.txt')
+treebankFolder = '/home/chris/Desktop/CustomTB/'
+outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
+outTestPath = Path('/home/chris/Desktop/MLTest.csv')
+lemmaListPath = Path('/home/chris/Desktop/Lemmalist.txt')
+formListPath = Path('/home/chris/Desktop/Formlist.txt')
+morphListPath = Path('/home/chris/Desktop/Morphlist.txt')
+ultimateListPath = Path('/home/chris/Desktop/Everythinglist.txt')
 
 os.chdir(treebankFolder)
 indir = os.listdir(treebankFolder)
