@@ -25,7 +25,7 @@ def train_input_fn(features, labels, batch_size):
     dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(12000).repeat().batch(batch_size)
+    dataset = dataset.shuffle(30000).repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
@@ -51,9 +51,9 @@ def eval_input_fn(features, labels, batch_size):
     return dataset
 
 
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.logging.set_verbosity(tf.logging.FATAL)
 batchSize = 100
-trainSteps = 10
+trainSteps = 30
 
 # Fetch the data
 (train_X, train_Y), (test_X, test_Y) = load_data()
@@ -67,8 +67,8 @@ for key in train_X.keys():
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
-                                        hidden_units=[500, 500], n_classes=6,)
-#                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
+                                        hidden_units=[500, 500], n_classes=6,
+                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
 
 # Train the Model.
 classifier.train(
