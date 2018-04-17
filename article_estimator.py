@@ -66,8 +66,8 @@ for key in train_X.keys():
                                                 default_value=0)
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
-classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[40, 40], n_classes=6,
-                                        model_dir='/home/chris/Desktop/TensLog/bs20-40x40')
+classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[50, 50], n_classes=6,
+                                        model_dir='/home/chris/Desktop/TensLog/bs20-50x50')
 
 j = 0
 
