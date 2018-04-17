@@ -69,7 +69,8 @@ for key in train_X.keys():
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[40, 40], n_classes=6,
                                         model_dir='/home/chris/Desktop/TensLog/bs20-40x40')
 
-j = 5
+j = 0
+
 while j < epochs:
 
     classifier.train(input_fn=lambda: train_input_fn(train_X, train_Y, elementCount, batchSize), steps=trainSteps)
