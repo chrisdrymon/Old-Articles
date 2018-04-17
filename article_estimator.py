@@ -10,6 +10,8 @@ def load_data(y_name='Answer'):
     test_path = '/home/chris/Desktop/MLTest.csv'
 
     train = pd.read_csv(train_path)
+    element_count = train.shape[0]-1
+    print(element_count)
 
     train_x, train_y = train, train.pop(y_name)
 
@@ -19,13 +21,13 @@ def load_data(y_name='Answer'):
     return (train_x, train_y), (test_x, test_y)
 
 
-def train_input_fn(features, labels, batch_size):
+def train_input_fn(features, labels, element_count, batch_size):
     """An input function for training"""
     # Convert the inputs to a Dataset.
     dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(30000).repeat().batch(batch_size)
+    dataset = dataset.shuffle(element_count).repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
@@ -52,11 +54,14 @@ def eval_input_fn(features, labels, batch_size):
 
 
 tf.logging.set_verbosity(tf.logging.FATAL)
-batchSize = 100
-trainSteps = 30
 
 # Fetch the data
 (train_X, train_Y), (test_X, test_Y) = load_data()
+
+elementCount = train_X.shape[0]
+batchSize = 100
+epochs = .1
+trainSteps = int(epochs * elementCount / batchSize)
 
 # Categorical Columns wrapped in Indicator Columns
 my_feature_columns = []
@@ -67,12 +72,12 @@ for key in train_X.keys():
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
 classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns,
-                                        hidden_units=[500, 500], n_classes=6,
-                                        model_dir='/home/chris/Desktop/MultiLog/bs100-500x500')
+                                        hidden_units=[2, 500, 500], n_classes=6,
+                                        model_dir='/home/chris/Desktop/MultiLog/bs100-2x500x500')
 
 # Train the Model.
 classifier.train(
-    input_fn=lambda: train_input_fn(train_X, train_Y, batchSize),
+    input_fn=lambda: train_input_fn(train_X, train_Y, elementCount, batchSize),
     steps=trainSteps)
 
 # Evaluate the model.
