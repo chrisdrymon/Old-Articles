@@ -112,8 +112,8 @@ for file_name in indir:
             allMorphs = returnedList[4]
             allLetters = returnedList[5]
 
-labelList = ['Article', 'Morph', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree', 'Strength',
-             'Inflection', 'Jewish']
+labelList = ['Article', 'Morph', 'Jewish', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree',
+             'Strength', 'Inflection']
 addedList = allLemmas + allForms + allMorphs + allLetters
 ultimateList = list(set(addedList))
 j = -2
