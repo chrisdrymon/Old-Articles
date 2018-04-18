@@ -13,6 +13,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
             for sentence in division:
                 alltokesinsent = sentence.findall(".*[@form]")
                 for token in alltokesinsent:
+                    # Create lists of words or letters.
                     if not deaccent(token.get('lemma')) in alllemmas:
                         alllemmas.append(deaccent(token.get('lemma')))
                     if not deaccent(token.get('form')) in allforms:
@@ -22,6 +23,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                     for letter in token.get('morphology'):
                         if letter not in allletters:
                             allletters.append(letter)
+                    # Creates all the values that will go into a single element. Loop.
                     if token.get('lemma') == 'ὁ':
                         form = deaccent(token.get('form'))
                         morph = token.get('morphology')
@@ -60,13 +62,14 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             except IndexError:
                                 mlformatlist.extend(['ellipsed']*13)
                             i += 1
-                        perarticledict[totarticlenumber] = mlformatlist
-                        totarticlenumber += 1
                         if headwordplace < -2 or headwordplace > 3:
                             fanswer = 0
                         else:
                             fanswer = answersdict[headwordplace]
-                        mlformatlist.extend([fanswer])
+                        mlformatlist.append(fanswer)
+                        perarticledict[totarticlenumber] = mlformatlist
+                        totarticlenumber += 1
+
     returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters]
     return returnlist
 
