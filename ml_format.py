@@ -64,7 +64,6 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             i += 1
                         if headwordplace < -2 or headwordplace > 3:
                             fanswer = 5
-                            print("One answer out of range.")
                         else:
                             fanswer = answersdict[headwordplace]
                         mlformatlist.append(fanswer)
