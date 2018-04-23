@@ -105,6 +105,7 @@ for file_name in indir:
             allForms = returnedList[3]
             allMorphs = returnedList[4]
 
+
 labelList = ['Article', 'Morph']
 addedList = allLemmas + allForms + allMorphs
 ultimateList = list(set(addedList))
@@ -135,18 +136,20 @@ df = df.sample(frac=1).reset_index(drop=True)
 splitNum = int(df.shape[0]*.8)
 dfTrain = df[:splitNum]
 dfTest = df[splitNum:]
-dfTrain.to_csv(outTrainPath, index=False)
-dfTest.to_csv(outTestPath, index=False)
-with open(lemmaListPath, "w") as output:
+print(dfTrain)
+dfTrain.to_csv(outTrainPath, index=False, encoding='utf-16')
+dfTest.to_csv(outTestPath, index=False, encoding='utf-16')
+print(dfTest)
+with open(lemmaListPath, "w", encoding='utf-16') as output:
     for s in allLemmas:
         output.write("%s\n" % s)
-with open(formListPath, "w") as output:
+with open(formListPath, "w", encoding='utf-16') as output:
     for s in allForms:
         output.write("%s\n" % s)
-with open(morphListPath, "w") as output:
+with open(morphListPath, "w", encoding='utf-16') as output:
     for s in allMorphs:
         output.write("%s\n" % s)
-with open(ultimateListPath, "w") as output:
+with open(ultimateListPath, "w", encoding='utf-16') as output:
     for s in ultimateList:
         output.write("%s\n" % s)
 print(len(allLemmas), 'lemmas in lemma list.')
