@@ -10,13 +10,13 @@ tf.logging.set_verbosity(tf.logging.INFO)
 def load_data(y_name='Answer'):
     """Returns the article dataset as (train_x, train_y), (test_x, test_y)."""
 
-    train_path = '/home/chris/Desktop/MLTrain.csv'
-    test_path = '/home/chris/Desktop/MLTest.csv'
+    train_path = 'MLTrain.csv'
+    test_path = 'MLTest.csv'
 
-    train = pd.read_csv(train_path)
+    train = pd.read_csv(train_path, encoding='utf-16')
     train_x, train_y = train, train.pop(y_name)
 
-    test = pd.read_csv(test_path)
+    test = pd.read_csv(test_path, encoding='utf-16')
     test_x, test_y = test, test.pop(y_name)
 
     return (train_x, train_y), (test_x, test_y)
@@ -64,12 +64,11 @@ print(trainSteps, "training steps.")
 my_feature_columns = []
 for key in train_X.keys():
     temp_column = tf.feature_column.\
-        categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt',
+        categorical_column_with_vocabulary_file(key=key, vocabulary_file='Everythinglist.txt',
                                                 default_value=0)
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
-classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[100, 100], n_classes=6,
-                                        model_dir='/home/chris/Desktop/TensLog/bs20-100x100')
+classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[100, 100], n_classes=6)
 
 j = 0
 
