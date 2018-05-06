@@ -160,12 +160,12 @@ allLemmas = ['yes', 'no']
 allForms = []
 allMorphs = []
 allLetters = []
-answersDict = {-2: 0,
-               -1: 1,
-               0: 5,
-               1: 2,
-               2: 3,
-               3: 4}
+answersDict = {-1: 0,
+               1: 1,
+               2: 2,
+               3: 3,
+               4: 4,
+               5: 5}
 
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
