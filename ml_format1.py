@@ -37,18 +37,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         for letter in morph:
                             mlformatlist.append(letter)
                         headwordplace = int(token.get('head-id')) - int(token.get('id'))
-                        nextwordid = articlenumber - 1
-                        try:
-                            form = deaccent(alltokesinsent[nextwordid].get('form'))
-                            lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                            morph = alltokesinsent[nextwordid].get('morphology')
-                            mlformatlist.extend([form, lemma, morph])
-                            for letter in morph:
-                                mlformatlist.append(letter)
-                        except IndexError:
-                            mlformatlist.extend(['ellipsed']*13)
-                        i = 1
-                        while i < 5:
+                        i = -2
+                        while i < 0:
                             nextwordid = articlenumber + i
                             try:
                                 form = deaccent(alltokesinsent[nextwordid].get('form'))
@@ -60,7 +50,20 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             except IndexError:
                                 mlformatlist.extend(['ellipsed']*13)
                             i += 1
-                        if headwordplace < -1 or headwordplace > 4:
+                        i += 1
+                        while i < 4:
+                            nextwordid = articlenumber + i
+                            try:
+                                form = deaccent(alltokesinsent[nextwordid].get('form'))
+                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
+                                morph = alltokesinsent[nextwordid].get('morphology')
+                                mlformatlist.extend([form, lemma, morph])
+                                for letter in morph:
+                                    mlformatlist.append(letter)
+                            except IndexError:
+                                mlformatlist.extend(['ellipsed']*13)
+                            i += 1
+                        if headwordplace < -2 or headwordplace > 3:
                             fanswer = 5
                         else:
                             fanswer = answersdict[headwordplace]
@@ -79,31 +82,31 @@ def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, 
         for sentence in body:
             alltokesinsent = sentence.findall(".*[@form]")
             # Loops through every word.
-            for word in alltokesinsent:
+            for token in alltokesinsent:
                 # Create lists of words or letters.
-                if not deaccent(word.get('lemma')) in alllemmas:
-                    alllemmas.append(deaccent(word.get('lemma')))
-                if not deaccent(word.get('form')) in allforms:
-                    allforms.append(deaccent(word.get('form')))
-                if not word.get('postag') in allmorphs:
-                    allmorphs.append(word.get('postag'))
-                for letter in word.get('postag'):
+                if not deaccent(token.get('lemma')) in alllemmas:
+                    alllemmas.append(deaccent(token.get('lemma')))
+                if not deaccent(token.get('form')) in allforms:
+                    allforms.append(deaccent(token.get('form')))
+                if not token.get('postag') in allmorphs:
+                    allmorphs.append(token.get('postag'))
+                for letter in token.get('postag'):
                     if letter not in allletters:
                         allletters.append(letter)
                 # Creates all the values that will go into a single element.
-                if word.get('lemma') == 'ὁ':
-                    form = deaccent(word.get('form'))
-                    morph = word.get('postag')
-                    articlenumber = alltokesinsent.index(word)
-                    if body.get('jewish') == 'yes':
+                if token.get('lemma') == 'ὁ':
+                    form = deaccent(token.get('form'))
+                    morph = token.get('postag')
+                    articlenumber = alltokesinsent.index(token)
+                    if source.get('jewish') == 'yes':
                         jewish = 'yes'
                     else:
                         jewish = 'no'
                     mlformatlist = [form, morph, jewish]
                     for letter in morph:
                         mlformatlist.append(letter)
-                    headwordplace = int(word.get('head-id')) - int(word.get('id'))
-                    i = -1
+                    headwordplace = int(token.get('head-id')) - int(token.get('id'))
+                    i = -2
                     while i < 0:
                         nextwordid = articlenumber + i
                         try:
