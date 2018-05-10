@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as Et
 import os
 import pandas as pd
 from utility import deaccent
@@ -102,7 +102,7 @@ answersDict = {-2: 0,
 
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
-        tb = ET.parse(file_name)
+        tb = Et.parse(file_name)
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':

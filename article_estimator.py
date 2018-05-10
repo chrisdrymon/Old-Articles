@@ -54,7 +54,7 @@ def eval_input_fn(features, labels, batch_size):
 (train_X, train_Y), (test_X, test_Y) = load_data()
 
 elementCount = train_X.shape[0]
-batchSize = 20
+batchSize = 10
 epochs = 5
 trainSteps = int(epochs * elementCount / batchSize)
 print(elementCount, "training elements.")
@@ -68,7 +68,7 @@ for key in train_X.keys():
                                                 default_value=0)
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
-classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[100, 100], n_classes=6,
+classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[50, 50], n_classes=6,
                                         model_dir='/home/chris/Desktop/TensLog/bs20-100x100')
 
 j = 0
