@@ -29,7 +29,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         form = deaccent(token.get('form'))
-                        morph = token.get('morphology')[:7]
+                        morph = token.get('morphology')[:8]
                         pos = token.get('part-of-speech')
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
@@ -44,7 +44,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                            morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                            morph = alltokesinsent[nextwordid].get('morphology')[:8]
                             pos = alltokesinsent[nextwordid].get('part-of-speech')
                             mlformatlist.extend([form, lemma, morph, pos])
                             for letter in morph:
@@ -57,7 +57,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                             try:
                                 form = deaccent(alltokesinsent[nextwordid].get('form'))
                                 lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                                morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                                morph = alltokesinsent[nextwordid].get('morphology')[:8]
                                 pos = alltokesinsent[nextwordid].get('part-of-speech')
                                 mlformatlist.extend([form, lemma, morph, pos])
                                 for letter in morph:
@@ -72,6 +72,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         mlformatlist.append(fanswer)
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
+                        print(mlformatlist)
 
     returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters, allpos]
     return returnlist
@@ -195,7 +196,7 @@ for file_name in indir:
 labelList = ['Article', 'Jewish', 'Morph', 'POS', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case',
              'Degree', '-1form', '-1lemma', '-1morph', '-1POS', '-1person', '-1number', '-1tense', '-1mood', '-1voice',
              '-1gender', '-1case', '-1degree']
-addedList = allLemmas + allForms + allMorphs + allLetters
+addedList = allLemmas + allForms + allMorphs + allLetters + allPOS
 ultimateList = list(set(addedList))
 
 j = 1
@@ -204,7 +205,7 @@ while j < 5:
     numForm = labelNumber + 'form'
     numLemma = labelNumber + 'lemma'
     numMorph = labelNumber + 'morph'
-    numPOS = labelNumber = 'POS'
+    numPOS = labelNumber + 'POS'
     numPerson = labelNumber + 'person'
     numNumber = labelNumber + 'number'
     numTense = labelNumber + 'tense'
@@ -220,6 +221,7 @@ while j < 5:
 
 labelList.extend(['Answer'])
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
+print(labelList)
 df.columns = labelList
 df = df.fillna('ellipsed')
 df = df.sample(frac=1).reset_index(drop=True)
