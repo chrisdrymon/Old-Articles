@@ -193,7 +193,7 @@ for file_name in indir:
         allLetters = returnedList[5]
 
 labelList = ['Article', 'Jewish', 'Morph', 'POS', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case',
-             'Degree', '-1form', '-1lemma', '-1POS', '-1morph', '-1person', '-1number', '-1tense', '-1mood', '-1voice',
+             'Degree', '-1form', '-1lemma', '-1morph', '-1POS', '-1person', '-1number', '-1tense', '-1mood', '-1voice',
              '-1gender', '-1case', '-1degree']
 addedList = allLemmas + allForms + allMorphs + allLetters
 ultimateList = list(set(addedList))
@@ -203,8 +203,8 @@ while j < 5:
     labelNumber = str(j)
     numForm = labelNumber + 'form'
     numLemma = labelNumber + 'lemma'
-    numPOS = labelNumber = 'POS'
     numMorph = labelNumber + 'morph'
+    numPOS = labelNumber = 'POS'
     numPerson = labelNumber + 'person'
     numNumber = labelNumber + 'number'
     numTense = labelNumber + 'tense'
@@ -213,7 +213,7 @@ while j < 5:
     numGender = labelNumber + 'gender'
     numCase = labelNumber + 'case'
     numDegree = labelNumber + 'degree'
-    newList = [numForm, numLemma, numPOS, numMorph, numPerson, numNumber, numTense, numMood, numVoice, numGender,
+    newList = [numForm, numLemma, numMorph, numPOS, numPerson, numNumber, numTense, numMood, numVoice, numGender,
                numCase, numDegree]
     labelList.extend(newList)
     j += 1
