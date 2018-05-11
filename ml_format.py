@@ -72,7 +72,6 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         mlformatlist.append(fanswer)
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
-                        print(mlformatlist)
 
     returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters, allpos]
     return returnlist
@@ -221,7 +220,6 @@ while j < 5:
 
 labelList.extend(['Answer'])
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
-print(labelList)
 df.columns = labelList
 df = df.fillna('ellipsed')
 df = df.sample(frac=1).reset_index(drop=True)
