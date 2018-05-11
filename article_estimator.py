@@ -77,8 +77,8 @@ while j < epochs:
 
     classifier.train(input_fn=lambda: train_input_fn(train_X, train_Y, elementCount, batchSize), steps=trainSteps)
 
-    eval_result = classifier.evaluate(input_fn=lambda: eval_input_fn(test_X, test_Y, batchSize))
+#    eval_result = classifier.evaluate(input_fn=lambda: eval_input_fn(test_X, test_Y, batchSize))
 
-    print('\nEpoch', (j+1), 'test set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
+#    print('\nEpoch', (j+1), 'test set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
     j += 1
