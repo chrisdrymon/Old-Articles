@@ -26,13 +26,12 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, all
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         morph = token.get('morphology')[:8]
-                        pos = posdict[token.get('part-of-speech')]
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
                             jewish = 'no'
-                        mlformatlist = [jewish, pos]
+                        mlformatlist = [jewish]
                         for letter in morph:
                             mlformatlist.append(letter)
                         headwordplace = int(token.get('head-id')) - int(token.get('id'))
@@ -87,7 +86,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, al
                         allletters.append(letter)
                 # Creates all the values that will go into a single element.
                 if word.get('lemma') == 'ὁ':
-                    morph = word.get('postag')
+                    morph = word.get('postag')[1:]
                     articlenumber = allwordsinsent.index(word)
                     if body.get('jewish') == 'yes':
                         jewish = 'yes'
@@ -173,8 +172,8 @@ for file_name in indir:
         allPOS = returnedList[3]
         allLetters = returnedList[4]
 
-labelList = ['Jewish', 'POS', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree', '-1lemma',
-             '-1POS', '-1person', '-1number', '-1tense', '-1mood', '-1voice', '-1gender', '-1case', '-1degree']
+labelList = ['Jewish', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree', '-1lemma', '-1POS',
+             '-1person', '-1number', '-1tense', '-1mood', '-1voice', '-1gender', '-1case', '-1degree']
 
 addedList = allLemmas + allLetters + allPOS
 ultimateList = list(set(addedList))
@@ -192,8 +191,7 @@ while j < 5:
     numGender = labelNumber + 'gender'
     numCase = labelNumber + 'case'
     numDegree = labelNumber + 'degree'
-    newList = [numLemma, numPOS, numPerson, numNumber, numTense, numMood, numVoice, numGender,
-               numCase, numDegree]
+    newList = [numLemma, numPOS, numPerson, numNumber, numTense, numMood, numVoice, numGender, numCase, numDegree]
     labelList.extend(newList)
     j += 1
 
