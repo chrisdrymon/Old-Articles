@@ -5,7 +5,7 @@ from utility import deaccent
 from pathlib import Path
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters, answersdict, allpos):
+def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, allletters, answersdict, posdict):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -15,17 +15,18 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters,
                 # Loops through every word.
                 for token in alltokesinsent:
                     # Create lists of words or letters.
+                    posletter = posdict[token.get('part-of-speech')]
                     if not deaccent(token.get('lemma')) in alllemmas:
                         alllemmas.append(deaccent(token.get('lemma')))
-                    if not token.get('part-of-speech') in allpos:
-                        allpos.append(token.get('part-of-speech'))
+                    if posletter not in allpos:
+                        allpos.append(posletter)
                     for letter in token.get('morphology'):
                         if letter not in allletters:
                             allletters.append(letter)
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         morph = token.get('morphology')[:8]
-                        pos = token.get('part-of-speech')
+                        pos = posdict[token.get('part-of-speech')]
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
@@ -39,7 +40,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters,
                         try:
                             lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                             morph = alltokesinsent[nextwordid].get('morphology')[:8]
-                            pos = alltokesinsent[nextwordid].get('part-of-speech')
+                            pos = posdict[alltokesinsent[nextwordid].get('part-of-speech')]
                             mlformatlist.extend([lemma, pos])
                             for letter in morph:
                                 mlformatlist.append(letter)
@@ -51,7 +52,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters,
                             try:
                                 lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
                                 morph = alltokesinsent[nextwordid].get('morphology')[:8]
-                                pos = alltokesinsent[nextwordid].get('part-of-speech')
+                                pos = posdict[alltokesinsent[nextwordid].get('part-of-speech')]
                                 mlformatlist.extend([lemma, pos])
                                 for letter in morph:
                                     mlformatlist.append(letter)
@@ -75,6 +76,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters
     returnlist = [perarticledict, totarticlenumber, alllemmas, allpos, allletters]
     return returnlist
 
+
 treebankFolder = '/home/chris/Desktop/CustomTB/'
 
 outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
@@ -97,6 +99,9 @@ answersDict = {-1: 0,
                3: 3,
                4: 4,
                5: 5}
+posDict = {'A-': 'a', 'Df': 'd', 'Dq': 'd', 'S-': 'l', 'Ma': 'm', 'Mo': 'm', 'C-': 'c', 'I-': 'i', 'R-': 'r', 'Pd': 'p',
+           'Px': 'p', 'Pp': 'p', 'Pk': 'p', 'Ps': 'p', 'Pc': 'p', 'Pr': 'p', 'Du': 'x', 'Pi': 'x', 'Ne': 'n', 'Nb': 'n',
+           'V-': 'v', 'G-': 'G-', 'F-': 'F-'}
 
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
@@ -104,7 +109,8 @@ for file_name in indir:
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allPOS, allLetters, answersDict)
+            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allPOS, allLetters, answersDict,
+                                     posDict)
         else:
             returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allLemmas, allPOS, allLetters, answersDict)
 
