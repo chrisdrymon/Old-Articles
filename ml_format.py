@@ -71,7 +71,6 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, all
 
 
 def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, allletters, answersdict):
-
     froot = treebank.getroot()
     for body in froot:
         for sentence in body:
@@ -96,6 +95,8 @@ def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, al
                     for letter in morph:
                         mlformatlist.append(letter)
                     headwordplace = int(word.get('head')) - int(word.get('id'))
+                    if headwordplace == 0:
+                        print(sentence.get('id'))
                     nextwordid = articlenumber - 1
                     try:
                         lemma = deaccent(allwordsinsent[nextwordid].get('lemma'))
@@ -129,7 +130,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, al
     return returnlist
 
 
-treebankFolder = '/home/chris/Desktop/CustomTB/'
+treebankFolder = '/home/chris/Desktop/Treebanks/'
 
 outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
 outTestPath = Path('/home/chris/Desktop/MLTest.csv')
@@ -142,7 +143,7 @@ indir = os.listdir(treebankFolder)
 
 perArticleDict = {}
 totArticleNumber = 1
-allLemmas = ['yes', 'no']
+allLemmas = ['yes', 'no', 'ellipsed']
 allLetters = []
 allPOS = []
 answersDict = {-1: 0,

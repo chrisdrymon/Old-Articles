@@ -1,4 +1,3 @@
-"""An Example of a DNNClassifier for the Article dataset."""
 import tensorflow as tf
 import pandas as pd
 import os
