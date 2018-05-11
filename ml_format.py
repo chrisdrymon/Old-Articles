@@ -26,7 +26,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allmorphs, 
                             allletters.append(letter)
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
-                        morph = token.get('morphology')[:7]
+                        morph = token.get('morphology')[:8]
                         pos = token.get('part-of-speech')
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
@@ -40,7 +40,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allmorphs, 
                         nextwordid = articlenumber - 1
                         try:
                             lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                            morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                            morph = alltokesinsent[nextwordid].get('morphology')[:8]
                             pos = alltokesinsent[nextwordid].get('part-of-speech')
                             mlformatlist.extend([lemma, morph, pos])
                             for letter in morph:
@@ -52,7 +52,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allmorphs, 
                             nextwordid = articlenumber + i
                             try:
                                 lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                                morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                                morph = alltokesinsent[nextwordid].get('morphology')[:8]
                                 pos = alltokesinsent[nextwordid].get('part-of-speech')
                                 mlformatlist.extend([lemma, morph, pos])
                                 for letter in morph:
@@ -146,6 +146,7 @@ treebankFolder = '/home/chris/Desktop/CustomTB/'
 outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
 outTestPath = Path('/home/chris/Desktop/MLTest.csv')
 lemmaListPath = Path('/home/chris/Desktop/Lemmalist.txt')
+formListPath = Path('/home/chris/Desktop/Formlist.txt')
 morphListPath = Path('/home/chris/Desktop/Morphlist.txt')
 lettersListPath = Path('/home/chris/Desktop/Letterslist.txt')
 ultimateListPath = Path('/home/chris/Desktop/Everythinglist.txt')
@@ -156,6 +157,7 @@ indir = os.listdir(treebankFolder)
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = ['yes', 'no']
+allForms = []
 allMorphs = []
 allLetters = []
 allPOS = []
@@ -181,21 +183,22 @@ for file_name in indir:
         perArticleDict = returnedList[0]
         totArticleNumber = returnedList[1]
         allLemmas = returnedList[2]
+        allForms = returnedList[3]
         allMorphs = returnedList[4]
         allLetters = returnedList[5]
 
 labelList = ['Jewish', 'Morph', 'POS', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree',
-             '-1lemma', '-1POS', '-1morph', '-1person', '-1number', '-1tense', '-1mood', '-1voice', '-1gender',
+             '-1lemma', '-1morph', '-1POS', '-1person', '-1number', '-1tense', '-1mood', '-1voice', '-1gender',
              '-1case', '-1degree']
-addedList = allLemmas + allMorphs + allLetters
+addedList = allLemmas + allMorphs + allLetters + allPOS
 ultimateList = list(set(addedList))
 
 j = 1
 while j < 5:
     labelNumber = str(j)
     numLemma = labelNumber + 'lemma'
-    numPOS = labelNumber = 'POS'
     numMorph = labelNumber + 'morph'
+    numPOS = labelNumber + 'POS'
     numPerson = labelNumber + 'person'
     numNumber = labelNumber + 'number'
     numTense = labelNumber + 'tense'
@@ -204,7 +207,7 @@ while j < 5:
     numGender = labelNumber + 'gender'
     numCase = labelNumber + 'case'
     numDegree = labelNumber + 'degree'
-    newList = [numLemma, numPOS, numMorph, numPerson, numNumber, numTense, numMood, numVoice, numGender,
+    newList = [numLemma, numMorph, numPOS, numPerson, numNumber, numTense, numMood, numVoice, numGender,
                numCase, numDegree]
     labelList.extend(newList)
     j += 1
