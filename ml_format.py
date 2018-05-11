@@ -71,7 +71,60 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, all
     return returnlist
 
 
-def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allletters, answersdict, allpos):
+def perseustbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, allletters, answersdict):
+
+    froot = treebank.getroot()
+    for body in froot:
+        for sentence in body:
+            allwordsinsent = sentence.findall(".*[@form]")
+            # Loops through every word.
+            for word in allwordsinsent:
+                # Create lists of words or letters.
+                if not deaccent(word.get('lemma')) in alllemmas:
+                    alllemmas.append(deaccent(word.get('lemma')))
+                for letter in word.get('postag'):
+                    if letter not in allletters:
+                        allletters.append(letter)
+                # Creates all the values that will go into a single element.
+                if word.get('lemma') == 'ὁ':
+                    morph = word.get('postag')
+                    articlenumber = allwordsinsent.index(word)
+                    if body.get('jewish') == 'yes':
+                        jewish = 'yes'
+                    else:
+                        jewish = 'no'
+                    mlformatlist = [jewish]
+                    for letter in morph:
+                        mlformatlist.append(letter)
+                    headwordplace = int(word.get('head')) - int(word.get('id'))
+                    nextwordid = articlenumber - 1
+                    try:
+                        lemma = deaccent(allwordsinsent[nextwordid].get('lemma'))
+                        morph = allwordsinsent[nextwordid].get('postag')
+                        mlformatlist.append(lemma)
+                        for letter in morph:
+                            mlformatlist.append(letter)
+                    except IndexError:
+                        mlformatlist.extend(['ellipsed']*10)
+                    i = 1
+                    while i < 5:
+                        nextwordid = articlenumber + i
+                        try:
+                            lemma = deaccent(allwordsinsent[nextwordid].get('lemma'))
+                            morph = allwordsinsent[nextwordid].get('postag')
+                            mlformatlist.append(lemma)
+                            for letter in morph:
+                                mlformatlist.append(letter)
+                        except IndexError:
+                            mlformatlist.extend(['ellipsed']*10)
+                        i += 1
+                    if headwordplace < -1 or headwordplace > 4:
+                        fanswer = 5
+                    else:
+                        fanswer = answersdict[headwordplace]
+                    mlformatlist.append(fanswer)
+                    perarticledict[totarticlenumber] = mlformatlist
+                    totarticlenumber += 1
 
     returnlist = [perarticledict, totarticlenumber, alllemmas, allpos, allletters]
     return returnlist
