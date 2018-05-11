@@ -5,7 +5,7 @@ from utility import deaccent
 from pathlib import Path
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters, answersdict):
+def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters, answersdict, allpos):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -21,19 +21,22 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         allforms.append(deaccent(token.get('form')))
                     if not token.get('morphology') in allmorphs:
                         allmorphs.append(token.get('morphology'))
+                    if not token.get('part-of-speech') in allpos:
+                        allpos.append(token.get('part-of-speech'))
                     for letter in token.get('morphology'):
                         if letter not in allletters:
                             allletters.append(letter)
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         form = deaccent(token.get('form'))
-                        morph = token.get('morphology')
+                        morph = token.get('morphology')[:7]
+                        pos = token.get('part-of-speech')
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
                             jewish = 'no'
-                        mlformatlist = [form, morph, jewish]
+                        mlformatlist = [form, jewish, morph, pos]
                         for letter in morph:
                             mlformatlist.append(letter)
                         headwordplace = int(token.get('head-id')) - int(token.get('id'))
@@ -41,24 +44,26 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                            morph = alltokesinsent[nextwordid].get('morphology')
-                            mlformatlist.extend([form, lemma, morph])
+                            morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                            pos = alltokesinsent[nextwordid].get('part-of-speech')
+                            mlformatlist.extend([form, lemma, morph, pos])
                             for letter in morph:
                                 mlformatlist.append(letter)
                         except IndexError:
-                            mlformatlist.extend(['ellipsed']*13)
+                            mlformatlist.extend(['ellipsed']*12)
                         i = 1
                         while i < 5:
                             nextwordid = articlenumber + i
                             try:
                                 form = deaccent(alltokesinsent[nextwordid].get('form'))
                                 lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                                morph = alltokesinsent[nextwordid].get('morphology')
-                                mlformatlist.extend([form, lemma, morph])
+                                morph = alltokesinsent[nextwordid].get('morphology')[:7]
+                                pos = alltokesinsent[nextwordid].get('part-of-speech')
+                                mlformatlist.extend([form, lemma, morph, pos])
                                 for letter in morph:
                                     mlformatlist.append(letter)
                             except IndexError:
-                                mlformatlist.extend(['ellipsed']*13)
+                                mlformatlist.extend(['ellipsed']*12)
                             i += 1
                         if headwordplace < -1 or headwordplace > 4:
                             fanswer = 5
@@ -68,7 +73,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allforms, a
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
 
-    returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters]
+    returnlist = [perarticledict, totarticlenumber, alllemmas, allforms, allmorphs, allletters, allpos]
     return returnlist
 
 
@@ -160,6 +165,7 @@ allLemmas = ['yes', 'no']
 allForms = []
 allMorphs = []
 allLetters = []
+allPOS = []
 answersDict = {-1: 0,
                1: 1,
                2: 2,
@@ -174,7 +180,7 @@ for file_name in indir:
         print(file_name)
         if tbroot.tag == 'proiel':
             returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allForms, allMorphs, allLetters,
-                                     answersDict)
+                                     answersDict, allPOS)
         else:
             returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allLemmas, allForms, allMorphs, allLetters,
                                       answersDict)
@@ -186,15 +192,18 @@ for file_name in indir:
         allMorphs = returnedList[4]
         allLetters = returnedList[5]
 
-labelList = ['Article', 'Morph', 'Jewish', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree',
-             'Strength', 'Inflection']
+labelList = ['Article', 'Jewish', 'Morph', 'POS', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case',
+             'Degree', '-1form', '-1lemma', '-1POS', '-1morph', '-1person', '-1number', '-1tense', '-1mood', '-1voice',
+             '-1gender', '-1case', '-1degree']
 addedList = allLemmas + allForms + allMorphs + allLetters
 ultimateList = list(set(addedList))
-j = -2
-while j < 0:
+
+j = 1
+while j < 5:
     labelNumber = str(j)
     numForm = labelNumber + 'form'
     numLemma = labelNumber + 'lemma'
+    numPOS = labelNumber = 'POS'
     numMorph = labelNumber + 'morph'
     numPerson = labelNumber + 'person'
     numNumber = labelNumber + 'number'
@@ -204,30 +213,8 @@ while j < 0:
     numGender = labelNumber + 'gender'
     numCase = labelNumber + 'case'
     numDegree = labelNumber + 'degree'
-    numStrength = labelNumber + 'strength'
-    numInflection = labelNumber + 'inflection'
-    newList = [numForm, numLemma, numMorph, numPerson, numNumber, numTense, numMood, numVoice, numGender, numCase,
-               numDegree, numStrength, numInflection]
-    labelList.extend(newList)
-    j += 1
-j += 1
-while j < 4:
-    labelNumber = str(j)
-    numForm = labelNumber + 'form'
-    numLemma = labelNumber + 'lemma'
-    numMorph = labelNumber + 'morph'
-    numPerson = labelNumber + 'person'
-    numNumber = labelNumber + 'number'
-    numTense = labelNumber + 'tense'
-    numMood = labelNumber + 'mood'
-    numVoice = labelNumber + 'voice'
-    numGender = labelNumber + 'gender'
-    numCase = labelNumber + 'case'
-    numDegree = labelNumber + 'degree'
-    numStrength = labelNumber + 'strength'
-    numInflection = labelNumber + 'inflection'
-    newList = [numForm, numLemma, numMorph, numPerson, numNumber, numTense, numMood, numVoice, numGender, numCase,
-               numDegree, numStrength, numInflection]
+    newList = [numForm, numLemma, numPOS, numMorph, numPerson, numNumber, numTense, numMood, numVoice, numGender,
+               numCase, numDegree]
     labelList.extend(newList)
     j += 1
 
