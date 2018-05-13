@@ -144,8 +144,8 @@ indir = os.listdir(treebankFolder)
 perArticleDict = {}
 totArticleNumber = 1
 allLemmas = ['yes', 'no', 'ellipsed']
-allLetters = []
-allPOS = []
+allLetters = ['a']
+allPOS = ['a']
 answersDict = {-1: 0,
                1: 1,
                2: 2,
