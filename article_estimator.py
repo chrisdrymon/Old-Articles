@@ -1,10 +1,9 @@
-"""An Example of a DNNClassifier for the Article dataset."""
 import tensorflow as tf
 import pandas as pd
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-tf.logging.set_verbosity(tf.logging.INFO)
+#tf.logging.set_verbosity(tf.logging.INFO)
 
 
 def load_data(y_name='Answer'):

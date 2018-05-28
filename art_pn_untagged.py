@@ -5,7 +5,7 @@ from utility import deaccent
 from pathlib import Path
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, allletters, answersdict, posdict):
+def proieltbs(treebank, perarticledict, totarticlenumber, allforms, answersdict, posdict):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -15,49 +15,25 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, all
                 # Loops through every word.
                 for token in alltokesinsent:
                     # Create lists of words or letters.
-                    posletter = posdict[token.get('part-of-speech')]
-                    if not deaccent(token.get('lemma')) in alllemmas:
-                        alllemmas.append(deaccent(token.get('lemma')))
-                    if posletter not in allpos:
-                        allpos.append(posletter)
-                    for letter in token.get('morphology'):
-                        if letter not in allletters:
-                            allletters.append(letter)
+                    if not deaccent(token.get('form')) in allforms:
+                        allforms.append(deaccent(token.get('form')))
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
-                        morph = token.get('morphology')[:8]
                         articlenumber = alltokesinsent.index(token)
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
                             jewish = 'no'
                         mlformatlist = [jewish]
-                        for letter in morph:
-                            mlformatlist.append(letter)
-                        headwordplace = int(token.get('head-id')) - int(token.get('id'))
                         nextwordid = articlenumber - 1
                         try:
-                            lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                            morph = alltokesinsent[nextwordid].get('morphology')[:8]
-                            pos = posdict[alltokesinsent[nextwordid].get('part-of-speech')]
-                            mlformatlist.extend([lemma, pos])
-                            for letter in morph:
-                                mlformatlist.append(letter)
+                            form = deaccent(alltokesinsent[nextwordid].get('form'))
+                            mlformatlist.append(form)
                         except IndexError:
-                            mlformatlist.extend(['ellipsed']*10)
+                            mlformatlist.append('OOR')
                         i = 1
                         while i < 5:
                             nextwordid = articlenumber + i
-                            try:
-                                lemma = deaccent(alltokesinsent[nextwordid].get('lemma'))
-                                morph = alltokesinsent[nextwordid].get('morphology')[:8]
-                                pos = posdict[alltokesinsent[nextwordid].get('part-of-speech')]
-                                mlformatlist.extend([lemma, pos])
-                                for letter in morph:
-                                    mlformatlist.append(letter)
-                            except IndexError:
-                                mlformatlist.extend(['ellipsed']*10)
-                            i += 1
                         if headwordplace < -1 or headwordplace > 4:
                             fanswer = 5
                         else:
@@ -66,7 +42,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, alllemmas, allpos, all
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
 
-    returnlist = [perarticledict, totarticlenumber, alllemmas, allpos, allletters]
+    returnlist = [perarticledict, totarticlenumber, allforms]
     return returnlist
 
 
@@ -143,9 +119,8 @@ indir = os.listdir(treebankFolder)
 
 perArticleDict = {}
 totArticleNumber = 1
-allLemmas = ['yes', 'no', 'ellipsed']
-allLetters = ['a']
-allPOS = ['a']
+allForms = ['yes', 'no', 'ellipsed']
+
 answersDict = {-1: 0,
                1: 1,
                2: 2,
@@ -162,21 +137,20 @@ for file_name in indir:
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allLemmas, allPOS, allLetters, answersDict,
-                                     posDict)
+            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allForms, answersDict)
         else:
-            returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allLemmas, allPOS, allLetters, answersDict)
+            returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allForms, answersDict)
 
         perArticleDict = returnedList[0]
         totArticleNumber = returnedList[1]
-        allLemmas = returnedList[2]
+        allForms = returnedList[2]
         allPOS = returnedList[3]
         allLetters = returnedList[4]
 
 labelList = ['Jewish', 'Person', 'Number', 'Tense', 'Mood', 'Voice', 'Gender', 'Case', 'Degree', '-1lemma', '-1POS',
              '-1person', '-1number', '-1tense', '-1mood', '-1voice', '-1gender', '-1case', '-1degree']
 
-addedList = allLemmas + allLetters + allPOS
+addedList = allForms + allLetters + allPOS
 ultimateList = list(set(addedList))
 
 j = 1
@@ -207,7 +181,7 @@ dfTest = df[splitNum:]
 dfTrain.to_csv(outTrainPath, index=False)
 dfTest.to_csv(outTestPath, index=False)
 with open(lemmaListPath, "w") as output:
-    for s in allLemmas:
+    for s in allForms:
         output.write("%s\n" % s)
 with open(lettersListPath, "w") as output:
     for s in allLetters:
@@ -215,6 +189,6 @@ with open(lettersListPath, "w") as output:
 with open(ultimateListPath, "w") as output:
     for s in ultimateList:
         output.write("%s\n" % s)
-print(len(allLemmas), 'lemmas in lemma list.')
+print(len(allForms), 'lemmas in lemma list.')
 print(len(ultimateList), 'entries total in the ultimate list.')
 print(len(perArticleDict), 'article entires.')
