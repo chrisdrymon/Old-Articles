@@ -5,7 +5,7 @@ from utility import deaccent
 from pathlib import Path
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, allforms, answersdict, posdict):
+def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -25,19 +25,15 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms, answersdict,
                         else:
                             jewish = 'no'
                         mlformatlist = [jewish]
-                        nextwordid = articlenumber - 1
+                        nextwordid = articlenumber + 1
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
                         except IndexError:
                             mlformatlist.append('OOR')
-                        i = 1
-                        while i < 5:
-                            nextwordid = articlenumber + i
-                        if headwordplace < -1 or headwordplace > 4:
-                            fanswer = 5
-                        else:
-                            fanswer = answersdict[headwordplace]
+                        if token.get('part-of-speech') == 'S-':
+
+                        fanswer =
                         mlformatlist.append(fanswer)
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
@@ -121,12 +117,6 @@ perArticleDict = {}
 totArticleNumber = 1
 allForms = ['yes', 'no', 'ellipsed']
 
-answersDict = {-1: 0,
-               1: 1,
-               2: 2,
-               3: 3,
-               4: 4,
-               5: 5}
 posDict = {'A-': 'a', 'Df': 'd', 'Dq': 'd', 'S-': 'l', 'Ma': 'm', 'Mo': 'm', 'C-': 'c', 'I-': 'i', 'R-': 'r', 'Pd': 'p',
            'Px': 'p', 'Pp': 'p', 'Pk': 'p', 'Ps': 'p', 'Pc': 'p', 'Pr': 'p', 'Du': 'x', 'Pi': 'x', 'Ne': 'n', 'Nb': 'n',
            'V-': 'v', 'G-': 'G-', 'F-': 'F-'}
@@ -137,7 +127,7 @@ for file_name in indir:
         tbroot = tb.getroot()
         print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allForms, answersDict)
+            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allForms)
         else:
             returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allForms, answersDict)
 
