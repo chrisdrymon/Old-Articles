@@ -22,7 +22,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         else:
                             jewish = 'no'
                         mlformatlist = [jewish]
-                        nextwordid = articlenumber + 1
+                        nextwordid = articlenumber - 1
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
@@ -60,7 +60,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                     else:
                         jewish = 'no'
                     mlformatlist = [jewish]
-                    nextwordid = articlenumber + 1
+                    nextwordid = articlenumber - 1
                     try:
                         form = deaccent(allwordsinsent[nextwordid].get('form'))
                         mlformatlist.append(form)
