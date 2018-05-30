@@ -32,6 +32,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
+                            fanswer = 'Article'
+
 
                         fanswer =
                         mlformatlist.append(fanswer)
