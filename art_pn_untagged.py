@@ -32,9 +32,9 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
-                            fanswer = 'Article'
+                            fanswer = 0
                         else:
-                            fanswer = 'Pronoun'
+                            fanswer = 1
                         mlformatlist.append(fanswer)
                         perarticledict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
@@ -67,9 +67,9 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                     except IndexError:
                         mlformatlist.append('OOR')
                     if word.get('postag')[0] == 'l':
-                        fanswer = 'Article'
+                        fanswer = 0
                     else:
-                        fanswer = 'Pronoun'
+                        fanswer = 1
                     mlformatlist.append(fanswer)
                     perarticledict[totarticlenumber] = mlformatlist
                     totarticlenumber += 1
