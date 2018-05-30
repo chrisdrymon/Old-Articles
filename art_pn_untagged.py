@@ -90,7 +90,7 @@ indir = os.listdir(treebankFolder)
 
 perArticleDict = {}
 totArticleNumber = 1
-allForms = ['OOR', 'yes', 'no']
+allForms = ['OOR', 'yes', 'no', 'Article', 'Pronoun']
 
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
