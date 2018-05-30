@@ -14,9 +14,6 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                 alltokesinsent = sentence.findall(".*[@form]")
                 # Loops through every word.
                 for token in alltokesinsent:
-                    # Create lists of words or letters.
-                    if not deaccent(token.get('form')) in allforms:
-                        allforms.append(deaccent(token.get('form')))
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         articlenumber = alltokesinsent.index(token)
@@ -29,6 +26,9 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
+                            # Create lists of words or letters.
+                            if not deaccent(token.get('form')) in allforms:
+                                allforms.append(deaccent(token.get('form')))
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
