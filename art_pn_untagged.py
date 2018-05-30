@@ -17,6 +17,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         articlenumber = alltokesinsent.index(token)
+                        # Add the initial info about the article itself.
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
