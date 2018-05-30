@@ -105,7 +105,7 @@ for file_name in indir:
         totArticleNumber = returnedList[1]
         allForms = returnedList[2]
 
-labelList = ['Jewish', '+1Form', 'Answer']
+labelList = ['Jewish', '1Form', 'Answer']
 ultimateList = list(set(allForms))
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
 df.columns = labelList

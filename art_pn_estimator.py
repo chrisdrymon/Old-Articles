@@ -62,7 +62,7 @@ print(trainSteps, "training steps.")
 my_feature_columns = []
 for key in train_X.keys():
     temp_column = tf.feature_column.\
-        categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Everythinglist.txt',
+        categorical_column_with_vocabulary_file(key=key, vocabulary_file='/home/chris/Desktop/Formlist.txt',
                                                 default_value=0)
     my_feature_columns.append(tf.feature_column.indicator_column(temp_column))
 
