@@ -17,12 +17,15 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         articlenumber = alltokesinsent.index(token)
+                        artform = deaccent(token.get('form'))
                         # Add the initial info about the article itself.
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
                             jewish = 'no'
-                        mlformatlist = [jewish]
+                        if not deaccent(token.get('form')) in allforms:
+                            allforms.append(deaccent(token.get('form')))
+                        mlformatlist = [jewish, artform]
                         nextwordid = articlenumber - 1
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
@@ -56,11 +59,14 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                 # Creates all the values that will go into a single element.
                 if word.get('lemma') == 'ὁ':
                     articlenumber = allwordsinsent.index(word)
+                    artform = deaccent(word.get('form'))
                     if body.get('jewish') == 'yes':
                         jewish = 'yes'
                     else:
                         jewish = 'no'
-                    mlformatlist = [jewish]
+                    if not deaccent(word.get('form')) in allforms:
+                        allforms.append(deaccent(word.get('form')))
+                    mlformatlist = [jewish, artform]
                     nextwordid = articlenumber - 1
                     try:
                         form = deaccent(allwordsinsent[nextwordid].get('form'))
@@ -106,7 +112,7 @@ for file_name in indir:
         totArticleNumber = returnedList[1]
         allForms = returnedList[2]
 
-labelList = ['Jewish', '1Form', 'Answer']
+labelList = ['Jewish', 'Article', '1Form', 'Answer']
 ultimateList = list(set(allForms))
 df = pd.DataFrame.from_dict(perArticleDict, orient='index')
 df.columns = labelList
