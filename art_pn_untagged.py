@@ -80,7 +80,6 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                     mlformatlist.append(fanswer)
                     perarticledict[totarticlenumber] = mlformatlist
                     totarticlenumber += 1
-
     returnlist = [perarticledict, totarticlenumber, allforms]
     return returnlist
 
