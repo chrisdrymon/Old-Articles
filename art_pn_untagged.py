@@ -31,8 +31,8 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
                             # Create lists of words or letters.
-                            if not deaccent(token.get('form')) in allforms:
-                                allforms.append(deaccent(token.get('form')))
+                            if not form in allforms:
+                                allforms.append(form)
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
