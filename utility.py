@@ -16,7 +16,7 @@ def deaccent(dastring):
 
     # Strings to feed into translator tables to remove diacritics.
 
-    aelphas = str.maketrans(aeinput, aeoutput, "⸀̓⸁⸂⸃·,.—")
+    aelphas = str.maketrans(aeinput, aeoutput, "⸀̓⸁⸂⸃·’,.—")
     # This table also removes text critical markers and punctuation.
 
     hoes = str.maketrans(hoinput, hooutput, string.punctuation)
