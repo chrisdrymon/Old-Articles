@@ -84,7 +84,6 @@ treebankFolder = '/home/chris/Desktop/Treebanks/'
 outTrainPath = Path('/home/chris/Desktop/MLTrain.csv')
 outTestPath = Path('/home/chris/Desktop/MLTest.csv')
 formListPath = Path('/home/chris/Desktop/Formlist.txt')
-ultimateListPath = Path('/home/chris/Desktop/Everythinglist.txt')
 
 os.chdir(treebankFolder)
 indir = os.listdir(treebankFolder)
