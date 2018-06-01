@@ -5,7 +5,7 @@ from utility import deaccent
 from pathlib import Path
 
 
-def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
+def proieltbs(treebank, perarticledict, perpronoundict, totarticlenumber, allforms):
     """Creates lists in ML format for each article."""
     froot = treebank.getroot()
     for source in froot:
@@ -22,7 +22,7 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         else:
                             jewish = 'no'
                         mlformatlist = [jewish]
-                        nextwordid = articlenumber - 1
+                        nextwordid = articlenumber + 1
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
@@ -32,17 +32,17 @@ def proieltbs(treebank, perarticledict, totarticlenumber, allforms):
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
-                            fanswer = 0
+                            mlformatlist.append(0)
+                            perarticledict[totarticlenumber] = mlformatlist
                         else:
-                            fanswer = 1
-                        mlformatlist.append(fanswer)
-                        perarticledict[totarticlenumber] = mlformatlist
+                            mlformatlist.append(1)
+                            perpronoundict[totarticlenumber] = mlformatlist
                         totarticlenumber += 1
-    returnlist = [perarticledict, totarticlenumber, allforms]
+    returnlist = [perarticledict, perpronoundict, totarticlenumber, allforms]
     return returnlist
 
 
-def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
+def perseustbs(treebank, perarticledict, perpronoundict, totarticlenumber, allforms):
     froot = treebank.getroot()
     for body in froot:
         for sentence in body:
@@ -60,7 +60,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                     else:
                         jewish = 'no'
                     mlformatlist = [jewish]
-                    nextwordid = articlenumber - 1
+                    nextwordid = articlenumber + 1
                     try:
                         form = deaccent(allwordsinsent[nextwordid].get('form'))
                         mlformatlist.append(form)
@@ -74,7 +74,7 @@ def perseustbs(treebank, perarticledict, totarticlenumber, allforms):
                     perarticledict[totarticlenumber] = mlformatlist
                     totarticlenumber += 1
 
-    returnlist = [perarticledict, totarticlenumber, allforms]
+    returnlist = [perarticledict, perpronoundict, totarticlenumber, allforms]
     return returnlist
 
 
@@ -89,27 +89,31 @@ os.chdir(treebankFolder)
 indir = os.listdir(treebankFolder)
 
 perArticleDict = {}
+perPronounDict = {}
 totArticleNumber = 1
 allForms = ['OOR', 'yes', 'no', 'Article', 'Pronoun']
 
 for file_name in indir:
     if not file_name == 'README.md' and not file_name == '.git':
+        print(file_name)
         tb = Et.parse(file_name)
         tbroot = tb.getroot()
-        print(file_name)
         if tbroot.tag == 'proiel':
-            returnedList = proieltbs(tb, perArticleDict, totArticleNumber, allForms)
+            perArticleDict, perPronounDict, totArticleNumber, allForms = proieltbs(tb, perArticleDict, perPronounDict,
+                                                                                   totArticleNumber, allForms)
         else:
-            returnedList = perseustbs(tb, perArticleDict, totArticleNumber, allForms)
-        perArticleDict = returnedList[0]
-        totArticleNumber = returnedList[1]
-        allForms = returnedList[2]
-
+            perArticleDict, perPronounDict, totArticleNumber, allForms = perseustbs(tb, perArticleDict, perPronounDict,
+                                                                                    totArticleNumber, allForms)
 labelList = ['Jewish', '1Form', 'Answer']
-ultimateList = list(set(allForms))
-df = pd.DataFrame.from_dict(perArticleDict, orient='index')
+dfArt = pd.DataFrame.from_dict(perArticleDict, orient='index')
+dfPro = pd.DataFrame.from_dict(perPronounDict, orient='index')
+dfProSize = int(dfPro.shape[0])
+dfArt = dfArt.sample(n=dfProSize).reset_index(drop=True)
+frames = [dfArt, dfPro]
+df = pd.concat(frames)
 df.columns = labelList
 df = df.sample(frac=1).reset_index(drop=True)
+dfSize = int(df.shape[0])
 splitNum = int(df.shape[0]*.8)
 dfTrain = df[:splitNum]
 dfTest = df[splitNum:]
@@ -118,9 +122,6 @@ dfTest.to_csv(outTestPath, index=False)
 with open(formListPath, "w") as output:
     for s in allForms:
         output.write("%s\n" % s)
-with open(ultimateListPath, "w") as output:
-    for s in ultimateList:
-        output.write("%s\n" % s)
 print(len(allForms), 'forms in lemma list.')
-print(len(ultimateList), 'entries total in the ultimate list.')
-print(len(perArticleDict), 'article entires.')
+print(len(perPronounDict), 'pronouns.')
+print(dfSize, 'o lemmas.')
