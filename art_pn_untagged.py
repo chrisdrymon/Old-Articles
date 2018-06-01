@@ -67,10 +67,11 @@ def perseustbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfo
                     except IndexError:
                         mlformatlist.append('OOR')
                     if word.get('postag')[0] == 'l':
-                        fanswer = 0
+                        mlformatlist.append(0)
+                        perarticledict[totarticlenumber] = mlformatlist
                     else:
-                        fanswer = 1
-                    mlformatlist.append(fanswer)
+                        mlformatlist.append(1)
+                        perpronoundict[totarticlenumber] = mlformatlist
                     perarticledict[totarticlenumber] = mlformatlist
                     totarticlenumber += 1
 
