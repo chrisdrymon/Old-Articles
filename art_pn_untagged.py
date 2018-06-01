@@ -17,6 +17,9 @@ def proieltbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfor
                     # Creates all the values that will go into a single element.
                     if token.get('lemma') == 'ὁ':
                         articlenumber = alltokesinsent.index(token)
+                        artform = deaccent(token.get('form'))
+                        if artform not in allforms:
+                            allforms.append(artform)
                         if source.get('jewish') == 'yes':
                             jewish = 'yes'
                         else:
@@ -26,9 +29,8 @@ def proieltbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfor
                         try:
                             form = deaccent(alltokesinsent[nextwordid].get('form'))
                             mlformatlist.append(form)
-                            # Create lists of words or letters.
-                            if not deaccent(token.get('form')) in allforms:
-                                allforms.append(deaccent(token.get('form')))
+                            if form not in allforms and not form == '':
+                                allforms.append(form)
                         except IndexError:
                             mlformatlist.append('OOR')
                         if token.get('part-of-speech') == 'S-':
@@ -49,12 +51,12 @@ def perseustbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfo
             allwordsinsent = sentence.findall(".*[@form]")
             # Loops through every word.
             for word in allwordsinsent:
-                # Create lists of words or letters.
-                if not deaccent(word.get('form')) in allforms:
-                    allforms.append(deaccent(word.get('form')))
                 # Creates all the values that will go into a single element.
                 if word.get('lemma') == 'ὁ':
                     articlenumber = allwordsinsent.index(word)
+                    artform = word.get('form')
+                    if artform not in allforms:
+                        allforms.append(artform)
                     if body.get('jewish') == 'yes':
                         jewish = 'yes'
                     else:
@@ -64,6 +66,8 @@ def perseustbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfo
                     try:
                         form = deaccent(allwordsinsent[nextwordid].get('form'))
                         mlformatlist.append(form)
+                        if form not in allforms:
+                            allforms.append(form)
                     except IndexError:
                         mlformatlist.append('OOR')
                     if word.get('postag')[0] == 'l':
