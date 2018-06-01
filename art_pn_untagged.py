@@ -54,7 +54,7 @@ def perseustbs(treebank, perarticledict, perpronoundict, totarticlenumber, allfo
                 # Creates all the values that will go into a single element.
                 if word.get('lemma') == 'ὁ':
                     articlenumber = allwordsinsent.index(word)
-                    artform = word.get('form')
+                    artform = deaccent(word.get('form'))
                     if artform not in allforms:
                         allforms.append(artform)
                     if body.get('jewish') == 'yes':
