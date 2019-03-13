@@ -1,9 +1,10 @@
 import tensorflow as tf
 import pandas as pd
 import os
-#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import numpy as np
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-#tf.logging.set_verbosity(tf.logging.INFO)
+tf.logging.set_verbosity(tf.logging.INFO)
 
 
 def load_data(y_name='Bracket'):
@@ -58,7 +59,7 @@ def eval_input_fn(features, labels, batch_size):
 
 elementCount = train_X.shape[0]
 batchSize = 50
-epochs = 10
+epochs = 1
 trainSteps = int(elementCount/batchSize)*epochs
 print(trainSteps, "training steps.")
 
@@ -77,8 +78,7 @@ my_feature_columns.append(tf.feature_column.indicator_column(classColumn))
 scoreColumn = tf.feature_column.numeric_column(key='Score')
 my_feature_columns.append(scoreColumn)
 
-classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[10, 10], n_classes=3,
-                                        model_dir='/home/chris/Desktop/TensLog/krippy')
+classifier = tf.estimator.DNNClassifier(feature_columns=my_feature_columns, hidden_units=[20, 20], n_classes=3)
 
 j = 0
 
@@ -91,3 +91,11 @@ while j < epochs:
     print('\nEpoch', (j+1), 'test set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
     j += 1
+
+predictions = classifier.predict(
+    input_fn=lambda:iris_data.eval_input_fn(predict_x,
+                                            batch_size=args.batch_size))
+
+krap = np.array['Tuesday', 'Rogue', 68.7]
+pred = classifier.predict(krap)
+print(pred)
