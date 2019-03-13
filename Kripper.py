@@ -92,10 +92,6 @@ while j < epochs:
 
     j += 1
 
-predictions = classifier.predict(
-    input_fn=lambda:iris_data.eval_input_fn(predict_x,
-                                            batch_size=args.batch_size))
-
 krap = np.array['Tuesday', 'Rogue', 68.7]
 pred = classifier.predict(krap)
 print(pred)

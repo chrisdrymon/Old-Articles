@@ -23,7 +23,6 @@ raw_dataset = pd.read_csv(dataset_path, names=column_names,
 
 dataset = raw_dataset.copy()
 dataset.tail()
-
 dataset.isna().sum()
 
 dataset = dataset.dropna()
