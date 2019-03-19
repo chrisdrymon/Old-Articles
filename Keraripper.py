@@ -17,7 +17,7 @@ df=pd.read_csv('/home/chris/Desktop/KrippWins.csv', sep=',',header=None)
 print(df)
 tempList = []
 for index, row in df.iterrows():
-    print(row[0])
+    print(row)
 
 #formatted = np.array()
 
