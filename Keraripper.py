@@ -16,8 +16,11 @@ classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rog
 df=pd.read_csv('/home/chris/Desktop/KrippWins.csv', sep=',',header=None)
 print(df)
 tempList = []
-for index, row in df.iterrows():
-    print(row)
+for row in df.itertuples():
+    hotNum = dayDict[row[1]]
+    hot = [0, 0, 0, 0, 0, 0, 0]
+    hot[hotNum] = 1
+    print(hot)
 
 #formatted = np.array()
 
