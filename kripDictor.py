@@ -1,14 +1,11 @@
 from __future__ import absolute_import, division, print_function
 import tensorflow as tf
-import pandas as pd
-import numpy as np
-from tensorflow.keras import layers
 
 print(tf.VERSION)
 print(tf.keras.__version__)
 
 # We're doing to use this to load a model and predict.
-model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel.h5')
+model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel0323.h5')
 
 # Preparing dictionaries to convert data into integers. Later they will be turned to one-hots.
 dayDict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
