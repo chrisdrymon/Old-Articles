@@ -46,8 +46,8 @@ evalLabels = np.array(preLabels[splitNum:])
 print(df.shape[0], len(trainData), len(evalData))
 
 model = tf.keras.Sequential([
-layers.Dense(10, activation='relu', input_shape=(17,)),
-layers.Dense(10, activation='relu'),
+layers.Dense(20, activation='relu', input_shape=(17,)),
+layers.Dense(20, activation='relu'),
 layers.Dense(3, activation='softmax')])
 
 model.compile(optimizer=tf.train.AdamOptimizer(0.001),
@@ -55,7 +55,4 @@ model.compile(optimizer=tf.train.AdamOptimizer(0.001),
               metrics=['accuracy'])
 
 model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=50, validation_data=(evalData, evalLabels), shuffle=True)
-#model.save('/home/chris/Desktop/KrippModel.h5')
-predicTens = np.array([[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1]])
-prediction = model.predict(predicTens)
-print(prediction)
+model.save('/home/chris/Desktop/KrippModel544.h5')
