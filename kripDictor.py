@@ -17,8 +17,7 @@ classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rog
              'Warlock': 7, 'Warrior': 8}
 
 model.save('/home/chris/Desktop/KrippModel544.h5')
-testList = ['Friday', 'Shaman', 67.3]
-#predicTens = []
+testList = ['Saturday', 'Shaman', 69]
 
 hotNum = dayDict[testList[0]]
 hot1 = [0, 0, 0, 0, 0, 0, 0]

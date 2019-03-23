@@ -15,6 +15,9 @@ classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rog
 
 df = pd.read_csv('/home/chris/Desktop/KrippWins.csv', sep=',',header=None)
 df = df.sample(frac=1)
+
+#
+
 preNump = []
 preLabels = []
 
@@ -54,5 +57,9 @@ model.compile(optimizer=tf.train.AdamOptimizer(0.001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=50, validation_data=(evalData, evalLabels), shuffle=True)
-model.save('/home/chris/Desktop/KrippModel544.h5')
+callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, mode='min', restore_best_weights=True)]
+
+model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=150, callbacks=callbacks,
+          validation_data=(evalData, evalLabels), shuffle=True)
+
+model.save('/home/chris/Desktop/KrippModel.h5')
