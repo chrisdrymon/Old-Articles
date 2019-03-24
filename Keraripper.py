@@ -16,8 +16,6 @@ classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rog
 df = pd.read_csv('/home/chris/Desktop/KrippWins.csv', sep=',',header=None)
 df = df.sample(frac=1)
 
-#
-
 preNump = []
 preLabels = []
 
@@ -57,7 +55,9 @@ model.compile(optimizer=tf.train.AdamOptimizer(0.001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, mode='min', restore_best_weights=True)]
+callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, mode='min', restore_best_weights=True),
+             tf.keras.callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog', write_graph=True, write_images=True,
+             histogram_freq=1, write_grads=True, update_freq='epoch')]
 
 model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=150, callbacks=callbacks,
           validation_data=(evalData, evalLabels), shuffle=True)
