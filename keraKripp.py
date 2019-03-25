@@ -75,15 +75,15 @@ layers.Dense(50, activation='relu', input_shape=(77,)),
 layers.Dense(50, activation='relu'),
 layers.Dense(3, activation='softmax')])
 
-model.compile(optimizer=tf.train.AdamOptimizer(0.00005),
+model.compile(optimizer=tf.train.AdamOptimizer(0.0001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=50, mode='min', restore_best_weights=True),
+callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_acc', patience=100, mode='max', restore_best_weights=True),
              tf.keras.callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog', write_graph=True, write_images=True,
              histogram_freq=1, write_grads=True, update_freq='epoch')]
 
-model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=350, callbacks=callbacks,
+model.fit(x=trainData, y=trainLabels, batch_size=32, epochs=350, callbacks=callbacks,
           validation_data=(evalData, evalLabels), shuffle=True)
 
 model.save('/home/chris/Desktop/KrippModel.h5')
