@@ -55,7 +55,6 @@ for row in df.itertuples():
     # Combine data them into a single tensor.
     classTens.append(deckScore)
     combinedTens = classTens + dayHot + dateHot + monthHot + deckHot + expansHot
-    print(combinedTens)
 
     # Add that tensor to the list of tensors.
     preNump.append(combinedTens)
@@ -72,19 +71,19 @@ trainLabels = np.array(preLabels[:splitNum])
 evalLabels = np.array(preLabels[splitNum:])
 
 model = tf.keras.Sequential([
-layers.Dense(20, activation='relu', input_shape=(77,)),
-layers.Dense(20, activation='relu'),
+layers.Dense(50, activation='relu', input_shape=(77,)),
+layers.Dense(50, activation='relu'),
 layers.Dense(3, activation='softmax')])
 
-model.compile(optimizer=tf.train.AdamOptimizer(0.00001),
+model.compile(optimizer=tf.train.AdamOptimizer(0.00005),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=30, mode='min', restore_best_weights=True),
+callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=50, mode='min', restore_best_weights=True),
              tf.keras.callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog', write_graph=True, write_images=True,
              histogram_freq=1, write_grads=True, update_freq='epoch')]
 
-model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=150, callbacks=callbacks,
+model.fit(x=trainData, y=trainLabels, batch_size=30, epochs=350, callbacks=callbacks,
           validation_data=(evalData, evalLabels), shuffle=True)
 
 model.save('/home/chris/Desktop/KrippModel.h5')
