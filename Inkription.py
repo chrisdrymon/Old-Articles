@@ -70,6 +70,11 @@ evalData = np.array(preNump[splitNum:])
 trainLabels = np.array(preLabels[:splitNum])
 evalLabels = np.array(preLabels[splitNum:])
 
+dense1 = 20
+dropout1 = 0.2
+dense2 = 20
+dropout2 = 0.4
+
 model = tf.keras.Sequential([
 layers.Dense(20, activation='relu', input_shape=(77,)),
 layers.Dropout(0.4),
