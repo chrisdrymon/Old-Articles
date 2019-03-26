@@ -5,7 +5,7 @@ print(tf.VERSION)
 print(tf.keras.__version__)
 
 # We're doing to use this to load a model and predict.
-model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel0325.h5')
+model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel471Per.h5')
 
 # Preparing dictionaries to convert data into integers. Later they will be turned to one-hots.
 dayDict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
@@ -17,7 +17,7 @@ expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5,
              'Boomsday': 9, 'Rumble': 10}
 
 #     [Class,  Score,  Day,   Date, MM,   Deck Type,       Expansion]
-row = ['Rogue', 67.8, 'Monday', 25, 2, 'Classic Aggro', 'Rumble']
+row = ['Mage', 70, 'Tuesday', 22, 8, 'Classic Aggro', 'Rumble']
 
 # Turning classes to hots.
 hotNum = classDict[row[0]]

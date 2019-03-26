@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-from tensorflow.keras import layers
+from tensorflow.keras import layers, callbacks
 
 print(tf.VERSION)
 print(tf.keras.__version__)
@@ -70,20 +70,28 @@ evalData = np.array(preNump[splitNum:])
 trainLabels = np.array(preLabels[:splitNum])
 evalLabels = np.array(preLabels[splitNum:])
 
+dense1 = 20
+dropout1 = 0.2
+dense2 = 20
+dropout2 = 0.4
+
 model = tf.keras.Sequential([
-layers.Dense(50, activation='relu', input_shape=(77,)),
+layers.Dense(20, activation='relu', input_shape=(77,)),
+layers.Dropout(0.4),
 layers.Dense(50, activation='relu'),
+layers.Dropout(0.4),
 layers.Dense(3, activation='softmax')])
 
-model.compile(optimizer=tf.train.AdamOptimizer(0.0001),
+model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_acc', patience=100, mode='max', restore_best_weights=True),
-             tf.keras.callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog', write_graph=True, write_images=True,
-             histogram_freq=1, write_grads=True, update_freq='epoch')]
+callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=20, mode='max', restore_best_weights=True),
+             callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001),
+             callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
+                                   write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
 
-model.fit(x=trainData, y=trainLabels, batch_size=32, epochs=350, callbacks=callbacks,
+model.fit(x=trainData, y=trainLabels, batch_size=256, epochs=300, callbacks=callbacks,
           validation_data=(evalData, evalLabels), shuffle=True)
 
 model.save('/home/chris/Desktop/KrippModel.h5')
