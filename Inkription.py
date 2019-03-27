@@ -71,27 +71,48 @@ trainLabels = np.array(preLabels[:splitNum])
 evalLabels = np.array(preLabels[splitNum:])
 
 dense1 = 20
-dropout1 = 0.2
-dense2 = 20
-dropout2 = 0.4
+activation1 = 'elu'
+dropout1 = 0.5
+dense2 = 30
+activation2 = 'tanh'
+dropout2 = 0.0
+batchSize = 12
+learninRate = 0.00005
 
 model = tf.keras.Sequential([
-layers.Dense(20, activation='relu', input_shape=(77,)),
-layers.Dropout(0.4),
-layers.Dense(50, activation='relu'),
-layers.Dropout(0.4),
+layers.Dense(dense1, activation=activation1, input_shape=(77,)),
+layers.Dropout(dropout1),
+layers.Dense(dense2, activation=activation2),
+layers.Dropout(dropout2),
 layers.Dense(3, activation='softmax')])
 
-model.compile(optimizer='adam',
+optimizer = tf.keras.optimizers.Adam(lr=0.00005)
+
+model.compile(optimizer=optimizer,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=20, mode='max', restore_best_weights=True),
-             callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001),
+callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=100, restore_best_weights=True),
+#             callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001),
              callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
                                    write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
 
-model.fit(x=trainData, y=trainLabels, batch_size=256, epochs=300, callbacks=callbacks,
-          validation_data=(evalData, evalLabels), shuffle=True)
+theModel = model.fit(x=trainData, y=trainLabels, batch_size=batchSize, epochs=300, callbacks=callbacks,
+                     validation_data=(evalData, evalLabels), shuffle=True)
+
+theBest = 0
+bestEpoch = 1
+item = 0
+while item < len(theModel.history['acc']):
+    if theModel.history['acc'][item] < theModel.history['val_acc'][item]:
+        theWorst = theModel.history['acc'][item]
+    else:
+        theWorst = theModel.history['val_acc'][item]
+    if theWorst > theBest:
+        theBest = theWorst
+        bestEpoch = item + 1
+    item += 1
+
+print('The best accuracy is', theBest, 'at epoch', bestEpoch)
 
 model.save('/home/chris/Desktop/KrippModel.h5')
