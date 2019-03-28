@@ -21,6 +21,7 @@ df = df.sample(frac=1)
 
 preNump = []
 preLabels = []
+best = 0
 
 for row in df.itertuples():
     # Turning classes to hots.
@@ -71,8 +72,7 @@ trainLabels = np.array(preLabels[:splitNum])
 evalLabels = np.array(preLabels[splitNum:])
 
 dense1 = 20
-activation1 = 'elu'
-dropout1 = 0.5
+activation1 = 'relu'
 dense2 = 30
 activation2 = 'tanh'
 dropout2 = 0.0
@@ -92,12 +92,30 @@ model.compile(optimizer=optimizer,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=100, restore_best_weights=True),
+
+class CustomModelCheckpoint(tf.keras.callbacks.Callback):
+    best = 0
+
+    def on_epoch_end(self, epoch, logs=None):
+        # logs is a dictionary
+        if logs['val_acc'] > logs['acc']: # your custom condition
+            worst = logs['acc']
+        else:
+            worst = logs['val_acc']
+        if worst > self.best:
+            self.best = worst
+            self.model.save('/home/chris/Desktop/KrippModel.h5', overwrite=True)
+            print('Model saved at epoch', epoch, 'with', self.best, 'accuracy.')
+
+
+cbk = CustomModelCheckpoint()
+
+callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=100), cbk,
 #             callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001),
              callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
                                    write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
 
-theModel = model.fit(x=trainData, y=trainLabels, batch_size=batchSize, epochs=300, callbacks=callbacks,
+theModel = model.fit(x=trainData, y=trainLabels, batch_size=batchSize, epochs=400, callbacks=callbacks,
                      validation_data=(evalData, evalLabels), shuffle=True)
 
 theBest = 0
@@ -115,4 +133,4 @@ while item < len(theModel.history['acc']):
 
 print('The best accuracy is', theBest, 'at epoch', bestEpoch)
 
-model.save('/home/chris/Desktop/KrippModel.h5')
+#model.save('/home/chris/Desktop/KrippModel.h5')
