@@ -100,7 +100,7 @@ def runnn(fcbk, prenump, prelabels):
     fdropout2 = random.randint(0, 80)/100
     fbatchsize = random.randint(4, 300)
     lr1 = random.randint(1, 9)
-    lr2 = random.randint(-7, -1)
+    lr2 = random.randint(-6, -2)
     flearningrate = lr1*10**lr2
 
     fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(77,)),
