@@ -11,15 +11,14 @@ print(tf.keras.__version__)
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Preparing dictionaries to convert data into integers. Later they will be turned to one-hots.
-dayDict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-           'Friday': 5, 'Saturday': 6}
+
 classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rogue': 5, 'Shaman': 6,
              'Warlock': 7, 'Warrior': 8}
 deckType = {'Aggro-Control': 0, 'Attrition': 1, 'Classic Aggro': 2, 'Classic Control': 3, 'Mid-Range': 4, 'Tempo': 5}
 expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5, 'KFT': 6, 'KnC': 7, 'Woods': 8,
              'Boomsday': 9, 'Rumble': 10}
 
-df = pd.read_csv('/home/chris/Desktop/KrippWins.csv', sep=',', header=None)
+df = pd.read_csv('/home/chris/Desktop/KrippDateless.csv', sep=',', header=None)
 df = df.sample(frac=1)
 
 preNump = []
@@ -27,6 +26,7 @@ preLabels = []
 best = 0
 
 for row in df.itertuples():
+
     # Turning classes to hots.
     hotNum = classDict[row[1]]
     classTens = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -35,37 +35,24 @@ for row in df.itertuples():
     # Normalizing the deck scores before adding them to the tensor.
     deckScore = ((row[2]-50)/30)
 
-    # Turning days to hots.
-    hotNum = dayDict[row[3]]
-    dayHot = [0, 0, 0, 0, 0, 0, 0]
-    dayHot[hotNum] = 1
-
-    # Turn day of month in to a hot.
-    dateHot = [0]*31
-    dateHot[row[4]-1] = 1
-
-    # Turn month into a hot.
-    monthHot = [0]*12
-    monthHot[row[5]-1] = 1
-
     # Turn deck type into a hot.
     deckHot = [0]*6
-    deckHot[deckType[row[6]]] = 1
+    deckHot[deckType[row[3]]] = 1
 
     # Turn expansion into a hot.
     expansHot = [0]*11
-    expansHot[expansion[row[7]]] = 1
+    expansHot[expansion[row[4]]] = 1
 
     # Combine data them into a single tensor.
     classTens.append(deckScore)
-    combinedTens = classTens + dayHot + dateHot + monthHot + deckHot + expansHot
+    combinedTens = classTens + deckHot + expansHot
 
     # Add that tensor to the list of tensors.
     preNump.append(combinedTens)
 
     # Convert that label to a hot and add to the list of labels.
     labelHot = [0, 0, 0]
-    labelHot[row[8]] = 1
+    labelHot[row[5]] = 1
     preLabels.append(labelHot)
 
 
@@ -92,7 +79,7 @@ def runnn(fcbk, prenump, prelabels):
     ftrainlabels = np.array(prelabels[:splitnum])
     fevallabels = np.array(prelabels[splitnum:])
 
-    fdense1 = random.randint(30, 200)
+    fdense1 = random.randint(4, 200)
     factivation1 = 'relu'
     fdropout1 = random.randint(0, 80)/100
     fdense2 = random.randint(4, 200)
@@ -103,7 +90,7 @@ def runnn(fcbk, prenump, prelabels):
     lr2 = random.randint(-6, -2)
     flearningrate = lr1*10**lr2
 
-    fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(77,)),
+    fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(27,)),
                                  layers.Dropout(fdropout1),
                                  layers.Dense(fdense2, activation=factivation2),
                                  layers.Dropout(fdropout2),
@@ -161,7 +148,7 @@ while i < 51:
     samples.append(tempParameters)
     i += 1
 hyperParameters = np.asarray(samples)
-np.savetxt('/home/chris/Desktop/hyperparameters.csv', hyperParameters, delimiter=',')
+np.savetxt('/home/chris/Desktop/datelessparams.csv', hyperParameters, delimiter=',')
 print("Best Model:", bestModel)
 print("Layer 1:", bestDense1, "nodes,", bestDropout1 * 100, "% dropout.")
 print("Layer 2:", bestDense2, "nodes,", bestDropout2 * 100, "% dropout.")
