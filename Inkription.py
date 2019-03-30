@@ -2,11 +2,14 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 import pandas as pd
 import numpy as np
+import random
 from tensorflow.keras import layers, callbacks
+import os
 
 print(tf.VERSION)
 print(tf.keras.__version__)
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Preparing dictionaries to convert data into integers. Later they will be turned to one-hots.
 dayDict = {'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
            'Friday': 5, 'Saturday': 6}
@@ -65,33 +68,6 @@ for row in df.itertuples():
     labelHot[row[8]] = 1
     preLabels.append(labelHot)
 
-splitNum = int(df.shape[0]*.8)
-trainData = np.array(preNump[:splitNum])
-evalData = np.array(preNump[splitNum:])
-trainLabels = np.array(preLabels[:splitNum])
-evalLabels = np.array(preLabels[splitNum:])
-
-dense1 = 20
-activation1 = 'relu'
-dense2 = 30
-activation2 = 'tanh'
-dropout2 = 0.0
-batchSize = 12
-learninRate = 0.00005
-
-model = tf.keras.Sequential([
-layers.Dense(dense1, activation=activation1, input_shape=(77,)),
-layers.Dropout(dropout1),
-layers.Dense(dense2, activation=activation2),
-layers.Dropout(dropout2),
-layers.Dense(3, activation='softmax')])
-
-optimizer = tf.keras.optimizers.Adam(lr=0.00005)
-
-model.compile(optimizer=optimizer,
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
-
 
 class CustomModelCheckpoint(tf.keras.callbacks.Callback):
     best = 0
@@ -108,29 +84,87 @@ class CustomModelCheckpoint(tf.keras.callbacks.Callback):
             print('Model saved at epoch', epoch, 'with', self.best, 'accuracy.')
 
 
+def runnn(fcbk, prenump, prelabels):
+
+    splitnum = int(df.shape[0] * .8)
+    ftraindata = np.array(prenump[:splitnum])
+    fevaldata = np.array(prenump[splitnum:])
+    ftrainlabels = np.array(prelabels[:splitnum])
+    fevallabels = np.array(prelabels[splitnum:])
+
+    fdense1 = random.randint(4, 200)
+    factivation1 = 'relu'
+    fdropout1 = random.randint(0, 80)/100
+    fdense2 = random.randint(4, 200)
+    factivation2 = 'relu'
+    fdropout2 = random.randint(0, 80)/100
+    fbatchsize = random.randint(4, 300)
+    lr1 = random.randint(1, 9)
+    lr2 = random.randint(-7, -1)
+    flearningrate = lr1*10**lr2
+
+    fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(77,)),
+                                 layers.Dropout(fdropout1),
+                                 layers.Dense(fdense2, activation=factivation2),
+                                 layers.Dropout(fdropout2),
+                                 layers.Dense(3, activation='softmax')])
+
+    optimizer = tf.keras.optimizers.Adam(lr=flearningrate)
+
+    fmodel.compile(optimizer=optimizer,
+                   loss='categorical_crossentropy',
+                   metrics=['accuracy'])
+
+    fcallbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=50), fcbk,
+                  callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
+                                        write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
+
+    fthemodel = fmodel.fit(x=ftraindata, y=ftrainlabels, batch_size=fbatchsize, epochs=400, verbose=0,
+                           callbacks=fcallbacks, validation_data=(fevaldata, fevallabels), shuffle=True,
+                           initial_epoch=0)
+
+    return fdense1, fdropout1, fdense2, fdropout2, fbatchsize, flearningrate, fthemodel
+
+
 cbk = CustomModelCheckpoint()
 
-callbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=100), cbk,
-#             callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=5, min_lr=0.000001),
-             callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
-                                   write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
-
-theModel = model.fit(x=trainData, y=trainLabels, batch_size=batchSize, epochs=400, callbacks=callbacks,
-                     validation_data=(evalData, evalLabels), shuffle=True)
-
 theBest = 0
-bestEpoch = 1
-item = 0
-while item < len(theModel.history['acc']):
-    if theModel.history['acc'][item] < theModel.history['val_acc'][item]:
-        theWorst = theModel.history['acc'][item]
-    else:
-        theWorst = theModel.history['val_acc'][item]
-    if theWorst > theBest:
-        theBest = theWorst
-        bestEpoch = item + 1
-    item += 1
+samples = []
 
-print('The best accuracy is', theBest, 'at epoch', bestEpoch)
-
-#model.save('/home/chris/Desktop/KrippModel.h5')
+i = 1
+while i < 51:
+    graph = tf.Graph()
+    with tf.Session(graph=graph):
+        dense1, dropout1, dense2, dropout2, batchSize, learningRate, theModel = runnn(cbk, preNump, preLabels)
+        print(i, dense1, dropout1, dense2, dropout2)
+        item = 0
+        tempBest = 0
+        while item < len(theModel.history['acc']):
+            if theModel.history['acc'][item] < theModel.history['val_acc'][item]:
+                theWorst = theModel.history['acc'][item]
+            else:
+                theWorst = theModel.history['val_acc'][item]
+            if theWorst > theBest:
+                theBest = theWorst
+                bestModel = i
+                bestDense1 = dense1
+                bestDropout1 = dropout1
+                bestDense2 = dense2
+                bestDropout2 = dropout2
+                bestBatchSize = batchSize
+                bestLearningRate = learningRate
+                bestEpoch = item + 1
+            if theWorst > tempBest:
+                tempBest = theWorst
+            item += 1
+    tempParameters = [dense1, dropout1, dense2, dropout2, batchSize, learningRate, tempBest]
+    samples.append(tempParameters)
+    i += 1
+hyperParameters = np.asarray(samples)
+np.savetxt('/home/chris/Desktop/hyperparameters.csv', hyperParameters, delimiter=',')
+print("Best Model:", bestModel)
+print("Layer 1:", bestDense1, "nodes,", bestDropout1 * 100, "% dropout.")
+print("Layer 2:", bestDense2, "nodes,", bestDropout2 * 100, "% dropout.")
+print("Batch Size:", bestBatchSize)
+print("Learning Rate:", bestLearningRate)
+print('The best accuracy is', theBest * 100, '% at epoch', bestEpoch)

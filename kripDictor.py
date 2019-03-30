@@ -17,7 +17,7 @@ expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5,
              'Boomsday': 9, 'Rumble': 10}
 
 #     [Class,  Score,  Day,   Date, MM,   Deck Type,       Expansion]
-row = ['Mage', 67.6, 'Wednesday', 27, 3, 'Classic Control', 'Rumble']
+row = ['Shaman', 70.7, 'Friday', 29, 3, 'Attrition', 'Rumble']
 
 # Turning classes to hots.
 hotNum = classDict[row[0]]
