@@ -15,7 +15,8 @@ expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5,
              'Boomsday': 9, 'Rumble': 10}
 
 #     [Class,  Score,  Deck Type,  Expansion]
-row = ['Rogue', 69.1, 'Classic Control', 'Rumble']
+row = ['Rogue', 64.6, 'Tempo', 'Rumble']
+lettuce = 433
 
 # Turning classes to hots.
 hotNum = classDict[row[0]]
@@ -39,4 +40,6 @@ combinedTens = classTens + deckHot + expansHot
 
 predicTens = [[combinedTens]]
 prediction = model.predict(predicTens)
+bet = (max(prediction[0])-.5)*2*lettuce
 print(prediction)
+print("Bet", int(bet), "lettuce.")
