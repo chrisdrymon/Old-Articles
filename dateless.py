@@ -119,7 +119,7 @@ theBest = 0
 samples = []
 
 i = 1
-while i < 51:
+while i < 121:
     graph = tf.Graph()
     with tf.Session(graph=graph):
         dense1, dropout1, dense2, dropout2, batchSize, learningRate, theModel = runnn(cbk, preNump, preLabels)
