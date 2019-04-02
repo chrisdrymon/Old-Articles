@@ -15,8 +15,8 @@ expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5,
              'Boomsday': 9, 'Rumble': 10}
 
 #     [Class,  Score,  Deck Type,  Expansion]
-row = ['Shaman', 69.4, 'Mid-Range', 'Rumble']
-lettuce = 510
+row = ['Rogue', 68.9, 'Classic Control', 'Rumble']
+lettuce = 516
 
 # Turning classes to hots.
 hotNum = classDict[row[0]]

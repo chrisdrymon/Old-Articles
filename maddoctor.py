@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import tensorflow as tf
+import pandas as pd
 import csv
 
 print(tf.VERSION)
@@ -15,42 +16,48 @@ deckType = {'Aggro-Control': 0, 'Attrition': 1, 'Classic Aggro': 2, 'Classic Con
 expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5, 'KFT': 6, 'KnC': 7, 'Woods': 8,
              'Boomsday': 9, 'Rumble': 10}
 
-score = 50
-tenTens = []
+columnNames = []
+listOLists = []
 
-while score < 81:
-    #     [Class,  Score,  Deck Type,  Expansion]
-    row = ['Mage', score, 'Tempo', 'Rumble']
+for hsClass in classDict:
+    for dt in deckType:
+        score = 50
+        column = dt + ' ' + hsClass
+        columnNames.append(column)
+        pre2 = []
+        while score < 81:
+            #     [Class,  Score,  Deck Type,  Expansion]
+            row = [hsClass, score, dt, 'Rumble']
 
-    # Turning classes to hots.
-    hotNum = classDict[row[0]]
-    classTens = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    classTens[hotNum] = 1
+            # Turning classes to hots.
+            hotNum = classDict[row[0]]
+            classTens = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            classTens[hotNum] = 1
 
-    # Normalizing the deck scores before adding them to the tensor.
-    deckScore = ((row[1] - 50) / 30)
+            # Normalizing the deck scores before adding them to the tensor.
+            deckScore = ((row[1] - 50) / 30)
 
-    # Turn deck type into a hot.
-    deckHot = [0] * 6
-    deckHot[deckType[row[2]]] = 1
+            # Turn deck type into a hot.
+            deckHot = [0] * 6
+            deckHot[deckType[row[2]]] = 1
 
-    # Turn expansion into a hot.
-    expansHot = [0] * 11
-    expansHot[expansion[row[3]]] = 1
+            # Turn expansion into a hot.
+            expansHot = [0] * 11
+            expansHot[expansion[row[3]]] = 1
 
-    # Combine data them into a single tensor.
-    classTens.append(deckScore)
-    combinedTens = classTens + deckHot + expansHot
+            # Combine data them into a single tensor.
+            classTens.append(deckScore)
+            combinedTens = classTens + deckHot + expansHot
 
-    predicTens = [[combinedTens]]
-    prediction = model.predict(predicTens)
-    predList = prediction[0].tolist()
-    finTens = row + predList
-    tenTens.append(finTens)
-    score += 1
+            predicTens = [[combinedTens]]
+            prediction = model.predict(predicTens)
 
-print(tenTens)
-
-with open('/home/chris/Desktop/maddoc.csv', 'w+') as myCSV:
-    csvWriter = csv.writer(myCSV, delimiter=',')
-    csvWriter.writerows(tenTens)
+            score += 1
+            pre2.append(prediction[0][2])
+        listOLists.append(pre2)
+df = pd.DataFrame(listOLists).T
+df.columns = columnNames
+indexNames = list(range(50, 81))
+df.index = indexNames
+print(df)
+df.to_csv('/home/chris/Desktop/maddoc.csv')
