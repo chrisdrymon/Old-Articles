@@ -16,7 +16,7 @@ classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rog
              'Warlock': 7, 'Warrior': 8}
 deckType = {'Aggro-Control': 0, 'Attrition': 1, 'Classic Aggro': 2, 'Classic Control': 3, 'Mid-Range': 4, 'Tempo': 5}
 expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5, 'KFT': 6, 'KnC': 7, 'Woods': 8,
-             'Boomsday': 9, 'Rumble': 10}
+             'Boomsday': 9, 'Rumble': 10, 'RoS': 11}
 
 df = pd.read_csv('/home/chris/Desktop/KrippDateless.csv', sep=',', header=None)
 df = df.sample(frac=1)
@@ -40,7 +40,7 @@ for row in df.itertuples():
     deckHot[deckType[row[3]]] = 1
 
     # Turn expansion into a hot.
-    expansHot = [0]*11
+    expansHot = [0]*12
     expansHot[expansion[row[4]]] = 1
 
     # Combine data them into a single tensor.
@@ -61,7 +61,7 @@ class CustomModelCheckpoint(tf.keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         # logs is a dictionary
-        if logs['val_acc'] > logs['acc']: # your custom condition
+        if logs['val_acc'] > logs['acc']:
             worst = logs['acc']
         else:
             worst = logs['val_acc']
@@ -90,7 +90,7 @@ def runnn(fcbk, prenump, prelabels):
     lr2 = random.randint(-4, -3)
     flearningrate = lr1*10**lr2
 
-    fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(27,)),
+    fmodel = tf.keras.Sequential([layers.Dense(fdense1, activation=factivation1, input_shape=(28,)),
                                  layers.Dropout(fdropout1),
                                  layers.Dense(fdense2, activation=factivation2),
                                  layers.Dropout(fdropout2),
@@ -102,9 +102,9 @@ def runnn(fcbk, prenump, prelabels):
                    loss='categorical_crossentropy',
                    metrics=['accuracy'])
 
-    fcallbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=50), fcbk,
-                  callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
-                                        write_images=True, histogram_freq=1, write_grads=True, update_freq='epoch')]
+    fcallbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=50), fcbk]
+                 # callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
+                  #                      write_images=True, histogram_freq=1, write_grads=True)]
 
     fthemodel = fmodel.fit(x=ftraindata, y=ftrainlabels, batch_size=fbatchsize, epochs=400, verbose=0,
                            callbacks=fcallbacks, validation_data=(fevaldata, fevallabels), shuffle=True,
@@ -119,7 +119,7 @@ theBest = 0
 samples = []
 
 i = 1
-while i < 121:
+while i < 151:
     graph = tf.Graph()
     with tf.Session(graph=graph):
         dense1, dropout1, dense2, dropout2, batchSize, learningRate, theModel = runnn(cbk, preNump, preLabels)

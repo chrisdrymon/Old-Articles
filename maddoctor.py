@@ -1,20 +1,19 @@
 from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 import pandas as pd
-import csv
 
 print(tf.VERSION)
 print(tf.keras.__version__)
 
 # We're doing to use this to load a model and predict.
-model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel5017.h5')
+model = tf.keras.models.load_model('/home/chris/Desktop/KrippModel5066.h5')
 
 # Preparing dictionaries to convert data into integers. Later they will be turned to one-hots.
 classDict = {'Druid': 0, 'Hunter': 1, 'Mage': 2, 'Paladin': 3, 'Priest': 4, 'Rogue': 5, 'Shaman': 6,
              'Warlock': 7, 'Warrior': 8}
 deckType = {'Aggro-Control': 0, 'Attrition': 1, 'Classic Aggro': 2, 'Classic Control': 3, 'Mid-Range': 4, 'Tempo': 5}
 expansion = {'Vanilla': 0, 'BRM': 1, 'WOG': 2, 'Kara': 3, 'MSG': 4, 'Ungoro': 5, 'KFT': 6, 'KnC': 7, 'Woods': 8,
-             'Boomsday': 9, 'Rumble': 10}
+             'Boomsday': 9, 'Rumble': 10, 'RoS': 11}
 
 columnNames = []
 listOLists = []
@@ -42,7 +41,7 @@ for hsClass in classDict:
             deckHot[deckType[row[2]]] = 1
 
             # Turn expansion into a hot.
-            expansHot = [0] * 11
+            expansHot = [0] * 12
             expansHot[expansion[row[3]]] = 1
 
             # Combine data them into a single tensor.
@@ -55,9 +54,9 @@ for hsClass in classDict:
             score += 1
             pre2.append(prediction[0][2])
         listOLists.append(pre2)
-df = pd.DataFrame(listOLists).T
-df.columns = columnNames
+df = pd.DataFrame(listOLists)
 indexNames = list(range(50, 81))
-df.index = indexNames
+df.index = columnNames
+df.columns = indexNames
 print(df)
 df.to_csv('/home/chris/Desktop/maddoc.csv')
