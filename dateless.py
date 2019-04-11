@@ -81,19 +81,26 @@ def runnn(fcbk, prenump, prelabels):
 
     fdense1 = random.randint(4, 200)
     factivation1 = 'relu'
-    fdropout1 = random.randint(0, 80)/100
+    fdropout1 = random.randint(0, 40)/100
+    reg11 = random.randint(1, 9)
+    reg12 = random.randint(-5, -3)
+    freg1 = reg11*10**reg12
     fdense2 = random.randint(4, 200)
     factivation2 = 'relu'
     fdropout2 = random.randint(0, 80)/100
+    reg21 = random.randint(1, 9)
+    reg22 = random.randint(-5, -3)
+    freg2 = reg21*10**reg22
     fbatchsize = random.randint(4, 300)
     lr1 = random.randint(1, 9)
-    lr2 = random.randint(-4, -3)
+    lr2 = random.randint(-4, -2)
     flearningrate = lr1*10**lr2
 
-    fmodel = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l2(0.001),
+    fmodel = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l1(freg1),
                                                activation=factivation1, input_shape=(28,)),
                                  layers.Dropout(fdropout1),
-                                 layers.Dense(fdense2, activation=factivation2),
+                                 layers.Dense(fdense2, kernel_regularizer=tf.keras.regularizers.l1(freg2),
+                                              activation=factivation2),
                                  layers.Dropout(fdropout2),
                                  layers.Dense(3, activation='softmax')])
 
@@ -111,7 +118,7 @@ def runnn(fcbk, prenump, prelabels):
                            callbacks=fcallbacks, validation_data=(fevaldata, fevallabels), shuffle=True,
                            initial_epoch=0)
 
-    return fdense1, fdropout1, fdense2, fdropout2, fbatchsize, flearningrate, fthemodel
+    return fdense1, fdropout1, freg1, fdense2, fdropout2, freg2, fbatchsize, flearningrate, fthemodel
 
 
 cbk = CustomModelCheckpoint()
@@ -120,11 +127,12 @@ theBest = 0
 samples = []
 
 i = 1
-while i < 51:
+while i < 101:
     graph = tf.Graph()
     with tf.Session(graph=graph):
-        dense1, dropout1, dense2, dropout2, batchSize, learningRate, theModel = runnn(cbk, preNump, preLabels)
-        print(i, dense1, dropout1, dense2, dropout2)
+        dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate, theModel = runnn(cbk, preNump,
+                                                                                                  preLabels)
+        print(i, dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate)
         item = 0
         tempBest = 0
         while item < len(theModel.history['acc']):
@@ -137,15 +145,17 @@ while i < 51:
                 bestModel = i
                 bestDense1 = dense1
                 bestDropout1 = dropout1
+                bestReg1 = reg1
                 bestDense2 = dense2
                 bestDropout2 = dropout2
+                bestReg2 = reg2
                 bestBatchSize = batchSize
                 bestLearningRate = learningRate
                 bestEpoch = item + 1
             if theWorst > tempBest:
                 tempBest = theWorst
             item += 1
-    tempParameters = [dense1, dropout1, dense2, dropout2, batchSize, learningRate, tempBest]
+    tempParameters = [dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate, tempBest]
     samples.append(tempParameters)
     i += 1
 hyperParameters = np.asarray(samples)
