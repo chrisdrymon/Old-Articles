@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-import random
+import talos
 from tensorflow.keras import layers, callbacks
 import os
 
@@ -55,48 +55,16 @@ for row in df.itertuples():
     labelHot[row[5]] = 1
     preLabels.append(labelHot)
 
-
-class CustomModelCheckpoint(tf.keras.callbacks.Callback):
-    best = 0
-
-    def on_epoch_end(self, epoch, logs=None):
-        # logs is a dictionary
-        if logs['val_acc'] > logs['acc']:
-            worst = logs['acc']
-        else:
-            worst = logs['val_acc']
-        if worst > self.best:
-            self.best = worst
-            self.model.save('/home/chris/Desktop/KrippModel.h5', overwrite=True)
-            print('Model saved at epoch', epoch, 'with', self.best, 'accuracy.')
+splitnum = int(df.shape[0]*.8)
+traindata = np.array(preNump[:splitnum])
+evaldata = np.array(preNump[splitnum:])
+trainlabels = np.array(preLabels[:splitnum])
+evallabels = np.array(preLabels[splitnum:])
 
 
-def runnn(fcbk, prenump, prelabels):
+def runnn(x_train, y_train, x_val, y_val, params):
 
-    splitnum = int(df.shape[0] * .8)
-    ftraindata = np.array(prenump[:splitnum])
-    fevaldata = np.array(prenump[splitnum:])
-    ftrainlabels = np.array(prelabels[:splitnum])
-    fevallabels = np.array(prelabels[splitnum:])
-
-    fdense1 = random.randint(4, 200)
-    factivation1 = 'relu'
-    fdropout1 = 0
-    reg11 = random.randint(1, 9)
-    reg12 = random.randint(-5, -3)
-    freg1 = reg11*10**reg12
-    fdense2 = random.randint(4, 200)
-    factivation2 = 'relu'
-    fdropout2 = random.randint(0, 80)/100
-    reg21 = random.randint(1, 9)
-    reg22 = random.randint(-5, -3)
-    freg2 = reg21*10**reg22
-    fbatchsize = random.randint(4, 300)
-    lr1 = random.randint(1, 9)
-    lr2 = random.randint(-4, -2)
-    flearningrate = lr1*10**lr2
-
-    fmodel = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l1(freg1),
+    model = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l1(freg1),
                                                activation=factivation1, input_shape=(28,)),
                                  layers.Dropout(fdropout1),
                                  layers.Dense(fdense2, activation=factivation2),
@@ -105,22 +73,17 @@ def runnn(fcbk, prenump, prelabels):
 
     optimizer = tf.keras.optimizers.Adam(lr=flearningrate)
 
-    fmodel.compile(optimizer=optimizer,
+    model.compile(optimizer=optimizer,
                    loss='categorical_crossentropy',
                    metrics=['accuracy'])
 
-    fcallbacks = [callbacks.EarlyStopping(monitor='val_acc', patience=50), fcbk]
-                 # callbacks.TensorBoard(log_dir='/home/chris/Desktop/KrippLog/20D4DO50D4DO256Bl', write_graph=True,
-                  #                      write_images=True, histogram_freq=1, write_grads=True)]
-
-    fthemodel = fmodel.fit(x=ftraindata, y=ftrainlabels, batch_size=fbatchsize, epochs=400, verbose=0,
-                           callbacks=fcallbacks, validation_data=(fevaldata, fevallabels), shuffle=True,
+    history = model.fit(x=x_train, y=y_train, batch_size=fbatchsize, epochs=400, verbose=0,
+                           validation_data=(fevaldata, fevallabels), shuffle=True,
                            initial_epoch=0)
 
-    return fdense1, fdropout1, freg1, fdense2, fdropout2, freg2, fbatchsize, flearningrate, fthemodel
+    return history, model
 
 
-cbk = CustomModelCheckpoint()
 
 theBest = 0
 samples = []
