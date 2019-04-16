@@ -60,71 +60,28 @@ traindata = np.array(preNump[:splitnum])
 evaldata = np.array(preNump[splitnum:])
 trainlabels = np.array(preLabels[:splitnum])
 evallabels = np.array(preLabels[splitnum:])
+p = {'layer1': [12, 24, 48], 'batch_size': [10, 20, 40]}
 
 
 def runnn(x_train, y_train, x_val, y_val, params):
 
-    model = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l1(freg1),
-                                               activation=factivation1, input_shape=(28,)),
-                                 layers.Dropout(fdropout1),
-                                 layers.Dense(fdense2, activation=factivation2),
-                                 layers.Dropout(fdropout2),
+    model = tf.keras.Sequential([layers.Dense(params['layer1'], kernel_regularizer=tf.keras.regularizers.l2(0.001),
+                                              activation='relu', input_shape=(28,)),
+                                 layers.Dropout(.3),
+                                 layers.Dense(100, activation='relu'),
+                                 layers.Dropout(.2),
                                  layers.Dense(3, activation='softmax')])
 
-    optimizer = tf.keras.optimizers.Adam(lr=flearningrate)
+    optimizer = tf.keras.optimizers.Adam(lr=0.003)
 
     model.compile(optimizer=optimizer,
-                   loss='categorical_crossentropy',
-                   metrics=['accuracy'])
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
-    history = model.fit(x=x_train, y=y_train, batch_size=fbatchsize, epochs=400, verbose=0,
-                           validation_data=(fevaldata, fevallabels), shuffle=True,
-                           initial_epoch=0)
+    out = model.fit(x=x_train, y=y_train, batch_size=params['batch_size'], epochs=100, verbose=0,
+                        validation_data=(x_val, y_val), shuffle=True)
 
-    return history, model
-
+    return out, model
 
 
-theBest = 0
-samples = []
-
-i = 1
-while i < 51:
-    graph = tf.Graph()
-    with tf.Session(graph=graph):
-        dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate, theModel = runnn(cbk, preNump,
-                                                                                                  preLabels)
-        print(i, dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate)
-        item = 0
-        tempBest = 0
-        while item < len(theModel.history['acc']):
-            if theModel.history['acc'][item] < theModel.history['val_acc'][item]:
-                theWorst = theModel.history['acc'][item]
-            else:
-                theWorst = theModel.history['val_acc'][item]
-            if theWorst > theBest:
-                theBest = theWorst
-                bestModel = i
-                bestDense1 = dense1
-                bestDropout1 = dropout1
-                bestReg1 = reg1
-                bestDense2 = dense2
-                bestDropout2 = dropout2
-                bestReg2 = reg2
-                bestBatchSize = batchSize
-                bestLearningRate = learningRate
-                bestEpoch = item + 1
-            if theWorst > tempBest:
-                tempBest = theWorst
-            item += 1
-    tempParameters = [dense1, dropout1, reg1, dense2, dropout2, reg2, batchSize, learningRate, tempBest]
-    samples.append(tempParameters)
-    i += 1
-hyperParameters = np.asarray(samples)
-np.savetxt('/home/chris/Desktop/datelessparams.csv', hyperParameters, delimiter=',')
-print("Best Model:", bestModel)
-print("Layer 1:", bestDense1, "nodes,", bestDropout1 * 100, "% dropout.")
-print("Layer 2:", bestDense2, "nodes,", bestDropout2 * 100, "% dropout.")
-print("Batch Size:", bestBatchSize)
-print("Learning Rate:", bestLearningRate)
-print('The best accuracy is', theBest * 100, '% at epoch', bestEpoch)
+talos.Scan(x=traindata, y=trainlabels, x_val=evaldata, y_val=evallabels, model=runnn, params=p)
