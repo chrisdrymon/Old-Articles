@@ -96,7 +96,7 @@ def runnn(fcbk, prenump, prelabels):
     lr2 = random.randint(-4, -2)
     flearningrate = lr1*10**lr2
 
-    fmodel = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l1(freg1),
+    fmodel = tf.keras.Sequential([layers.Dense(fdense1, kernel_regularizer=tf.keras.regularizers.l2(freg1),
                                                activation=factivation1, input_shape=(28,)),
                                  layers.Dropout(fdropout1),
                                  layers.Dense(fdense2, activation=factivation2),
